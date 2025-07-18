@@ -30,7 +30,7 @@ using namespace std;
 
     说明 :
     0 <= n <= 105
- * 
+ *
  * 总结：
  * 1、10进制转2进制方式
  * 2、vector数据结构添加元素方法push_back

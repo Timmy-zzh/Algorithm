@@ -65,7 +65,16 @@ string addBinary(string a, string b)
     {
         result.append(std::to_string(space));
     }
-    std::reverse(result.begin(), result.end());
+    // std::reverse(result.begin(), result.end());
+    // 字符串对调，遍历字符串，长度为len/2,对前后对称部分的字符进行交换
+    int len = result.length();
+    for (int i = 0; i < len / 2; i++)
+    {
+        char ch = result[i];
+        result[i] = result[len - 1 - i];
+        result[len - 1 - i] = ch;
+    }
+
     return result;
 }
 
