@@ -57,6 +57,11 @@ bool checkInclusion(string s1, string s2)
         return false;
     }
     vector<int> countArr(26, 0);
+    for (auto element : countArr)
+    {
+        std::cout << element << ",";
+    }
+    std::cout << "111" << std::endl;
 
     for (int i = 0; i < s1.length(); i++)
     {
@@ -64,6 +69,11 @@ bool checkInclusion(string s1, string s2)
         countArr[s2[i] - 'a']--; // 长字符串字母的个数减少
     }
 
+    for (auto element : countArr)
+    {
+        std::cout << element << ",";
+    }
+    std::cout << "222" << std::endl;
     // 判断26个字母的所有个数是否都等于0
     if (allZero(countArr))
     {
@@ -75,6 +85,13 @@ bool checkInclusion(string s1, string s2)
     {
         countArr[s2[i] - 'a']--;
         countArr[s2[i - s1.length()] - 'a']++;
+
+        for (auto element : countArr)
+        {
+            std::cout << element << ",";
+        }
+        std::cout << "333" << " ,i=" << i << std::endl;
+
         if (allZero(countArr))
         {
             return true;
