@@ -115,6 +115,7 @@ Node *recursFlatten(Node *head)
 
         node = nextNode; // 指向下一个节点
     }
+    std::cout << "tail.val:" << tail->val << std::endl;
 
     return tail;
 }
