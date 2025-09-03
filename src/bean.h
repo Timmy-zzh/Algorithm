@@ -1,6 +1,7 @@
 
 #include <iostream>
 
+// 链表节点
 struct ListNode
 {
     int val;
@@ -25,33 +26,67 @@ struct ListNode
 };
 
 // 多级链表节点
+// class Node
+// {
+// public:
+//     int val;
+//     Node(int x) : val(x) {}
+//     Node *prev = nullptr;
+//     Node *next = nullptr;
+//     Node *child = nullptr;
+
+//     void print()
+//     {
+//         Node *node = this;
+//         while (node != nullptr)
+//         {
+//             std::cout << "node.val:" << node->val << " ," << std::endl;
+
+//             if (node->prev != nullptr)
+//             {
+//                 std::cout << "---- prev node.val:" << node->prev->val << " ," << std::endl;
+//             }
+//             else
+//             {
+//                 std::cout << "prev node.val: null ," << std::endl;
+//             }
+
+//             node = node->next;
+//         }
+//         // std::cout << std::endl;
+//     }
+// };
+
 class Node
 {
 public:
     int val;
-    Node(int x) : val(x) {}
-    Node *prev = nullptr;
-    Node *next = nullptr;
-    Node *child = nullptr;
+    Node *next;
+
+    Node() {}
+
+    Node(int _val)
+    {
+        val = _val;
+        next = NULL;
+    }
+
+    Node(int _val, Node *_next)
+    {
+        val = _val;
+        next = _next;
+    }
 
     void print()
     {
+        // 循环链表的打印，定义一个使用节点node，用于不断遍历，知道node的next指针指向head指针
         Node *node = this;
-        while (node != nullptr)
+        std::cout << node->val << " ,";
+        while (node->next != this)
         {
-            std::cout << "node.val:" << node->val << " ," << std::endl;
-
-            if (node->prev != nullptr)
-            {
-                std::cout << "---- prev node.val:" << node->prev->val << " ," << std::endl;
-            }
-            else
-            {
-                std::cout << "prev node.val: null ," << std::endl;
-            }
-
             node = node->next;
+            std::cout << node->val << " ,";
         }
-        // std::cout << std::endl;
+        std::cout << std::endl;
     }
 };
