@@ -76,7 +76,7 @@ public:
  * - 删除结点，需要先获取前一个结点，然后next指针指向下一个节点，使用单链表结构需要每次从头遍历，改为使用双向链表实现
  * - 为了实现简便，使用两个哨兵节点 head，和tail
  * 3、总结
- * - LRU缓存列表，采用哈希表map好双向链表实现
+ * - LRU缓存列表，采用哈希表map和双向链表实现
  * - 双向链表可以直接获取到前继节点，方便进行节点删除
  * - lru特性，可将操作后的结点插入到链表的尾节点位置
  * - 使用哨兵节点head和tail简便操作
@@ -142,10 +142,9 @@ public:
                 map.erase(delNode->key);
                 /**
                  * 这个地方要注意,不能写成，因为 head->next删除后，再获取head->next已经不是原来的结点值了
-                deleteNode(head->next);
-                map.erase(head->next->key);
+                 * deleteNode(head->next);
+                 * map.erase(head->next->key);
                  */
-
                 count--;
             }
 
@@ -178,7 +177,10 @@ public:
 
         prevNode->next = nextNode;
         nextNode->prev = prevNode;
+        node->next = nullptr;
+        node->prev = nullptr;
 
+        // 也可以这样写，就不好理解
         // node->prev->next = node->next;
         // node->next->prev = node->prev;
     }
