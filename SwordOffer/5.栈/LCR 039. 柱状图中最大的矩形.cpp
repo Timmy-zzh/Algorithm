@@ -42,39 +42,39 @@ https://leetcode.cn/problems/0ynMMM/description/
 
 int realArea(int left, int right, vector<int> &heights)
 {
-  std::cout << "left:" << left << " ,right:" << right << std::endl;
-  if (left >= heights.size())
-  {
-    return 0;
-  }
-  if (left >= right) // 区间范围只有一个
-  {
-    return heights[left];
-  }
-
-  // 找到该区间最小值，再分成三个部分，继续递归遍历
-  int minI = left;
-  for (int i = left; i <= right; i++)
-  {
-    if (heights[i] < heights[minI])
+    std::cout << "left:" << left << " ,right:" << right << std::endl;
+    if (left >= heights.size())
     {
-      minI = i;
+        return 0;
     }
-  }
-  int leftA = realArea(left, minI - 1, heights);
-  int area = heights[minI] * (right - left + 1);
-  int rightA = 0;
-  if (minI < heights.size())
-  {
-    rightA = realArea(minI + 1, right, heights);
-  }
-  area = std::max(area, leftA);
-  return std::max(area, rightA);
+    if (left >= right) // 区间范围只有一个
+    {
+        return heights[left];
+    }
+
+    // 找到该区间最小值，再分成三个部分，继续递归遍历
+    int minI = left;
+    for (int i = left; i <= right; i++)
+    {
+        if (heights[i] < heights[minI])
+        {
+            minI = i;
+        }
+    }
+    int leftA = realArea(left, minI - 1, heights);
+    int area = heights[minI] * (right - left + 1);
+    int rightA = 0;
+    if (minI < heights.size())
+    {
+        rightA = realArea(minI + 1, right, heights);
+    }
+    area = std::max(area, leftA);
+    return std::max(area, rightA);
 }
 
 int largestRectangleArea2(vector<int> &heights)
 {
-  return realArea(0, heights.size() - 1, heights);
+    return realArea(0, heights.size() - 1, heights);
 }
 
 /**
@@ -95,24 +95,24 @@ int largestRectangleArea2(vector<int> &heights)
  */
 int largestRectangleArea1(vector<int> &heights)
 {
-  int res = 0;
-  int count = heights.size();
-  for (int i = 0; i < count; i++)
-  {
-    int minH = heights[i];
-    for (int j = i; j < count; j++)
+    int res = 0;
+    int count = heights.size();
+    for (int i = 0; i < count; i++)
     {
-      // 查找最小值
-      if (heights[j] < minH)
-      {
-        minH = heights[j];
-      }
-      int area = minH * (j - i + 1);
-      // std::cout << "i:" << i << " ,minH:" << minH << ",area:" << area << std::endl;
-      res = std::max(res, area);
+        int minH = heights[i];
+        for (int j = i; j < count; j++)
+        {
+            // 查找最小值
+            if (heights[j] < minH)
+            {
+                minH = heights[j];
+            }
+            int area = minH * (j - i + 1);
+            // std::cout << "i:" << i << " ,minH:" << minH << ",area:" << area << std::endl;
+            res = std::max(res, area);
+        }
     }
-  }
-  return res;
+    return res;
 }
 
 /**
@@ -127,76 +127,76 @@ int largestRectangleArea1(vector<int> &heights)
  */
 int largestRectangleArea(vector<int> &heights)
 {
-  std::stack<int> stack;
-  stack.push(-1);
-  int res = 0;
+    std::stack<int> stack;
+    stack.push(-1);
+    int res = 0;
 
-  // 遍历数组
-  for (int i = 0; i < heights.size(); i++)
-  {
-    // 遍历元素与栈顶元素判断，遇到栈顶元素比遍历元素大的要进行出栈
-    while (stack.top() != -1 && heights[stack.top()] >= heights[i])
+    // 遍历数组
+    for (int i = 0; i < heights.size(); i++)
     {
-      int topI = stack.top();
-      stack.pop();
+        // 遍历元素与栈顶元素判断，遇到栈顶元素比遍历元素大的要进行出栈
+        while (stack.top() != -1 && heights[stack.top()] >= heights[i])
+        {
+            int topI = stack.top();
+            stack.pop();
 
-      // 计算面积
-      int area = heights[topI] * (i - stack.top() - 1);
-      res = std::max(res, area);
+            // 计算面积
+            int area = heights[topI] * (i - stack.top() - 1);
+            res = std::max(res, area);
+        }
+        // 并且最终遍历元素要入栈
+        stack.push(i);
     }
-    // 并且最终遍历元素要入栈
-    stack.push(i);
-  }
 
-  // 遍历完后，栈中还有元素，继续
-  while (stack.top() != -1)
-  {
-    int topI = stack.top();
-    stack.pop();
+    // 遍历完后，栈中还有元素，继续
+    while (stack.top() != -1)
+    {
+        int topI = stack.top();
+        stack.pop();
 
-    // 计算面积
-    int area = heights[topI] * (heights.size() - stack.top() - 1);
-    res = std::max(res, area);
-  }
+        // 计算面积
+        int area = heights[topI] * (heights.size() - stack.top() - 1);
+        res = std::max(res, area);
+    }
 
-  return res;
+    return res;
 }
 
 int main()
 {
-  std::cout << "Hello, Algorithm!" << std::endl;
+    std::cout << "Hello, Algorithm!" << std::endl;
 
-  vector<int> params = {2, 1, 5, 6, 2, 3};
-  // vector<int> params = {2, 4};
-  // vector<int> params = {4, 2};
+    vector<int> params = {2, 1, 5, 6, 2, 3};
+    // vector<int> params = {2, 4};
+    // vector<int> params = {4, 2};
 
-  for (auto ele : params)
-  {
-    std::cout << ele << ",";
-  }
-  std::cout << std::endl;
+    for (auto ele : params)
+    {
+        std::cout << ele << ",";
+    }
+    std::cout << std::endl;
 
-  auto res = largestRectangleArea(params);
+    auto res = largestRectangleArea(params);
 
-  std::cout << "res:" << res << std::endl;
+    std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
