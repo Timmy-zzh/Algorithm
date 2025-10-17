@@ -61,60 +61,60 @@ recentCounter.ping(3002);  // requests = [1, 100, 3001, 3002]，范围是 [2,300
 class RecentCounter
 {
 public:
-  RecentCounter()
-  {
-  }
-
-  int ping(int t)
-  {
-    // 入队列
-    queue.push(t);
-
-    // 取出队头元素
-    while (queue.front() + 3000 < t)
+    RecentCounter()
     {
-      queue.pop();
     }
-    return queue.size();
-  }
+
+    int ping(int t)
+    {
+        // 入队列
+        queue.push(t);
+
+        // 取出队头元素
+        while (queue.front() + 3000 < t)
+        {
+            queue.pop();
+        }
+        return queue.size();
+    }
 
 private:
-  std::queue<int> queue;
+    std::queue<int> queue;
 };
 
 int main()
 {
-  std::cout << "Hello, Algorithm!" << std::endl;
+    std::cout << "Hello, Algorithm!" << std::endl;
 
-  // vector<string> matrix = {"10100", "10111", "11111", "10010"};
+    // vector<string> matrix = {"10100", "10111", "11111", "10010"};
 
-  // for (auto ele : matrix)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // for (auto ele : matrix)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // auto res = maximalRectangle(matrix);
+    // auto res = maximalRectangle(matrix);
 
-  // std::cout << "res:" << res << std::endl;
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
