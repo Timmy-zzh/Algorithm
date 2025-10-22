@@ -90,3 +90,33 @@ public:
         std::cout << std::endl;
     }
 };
+
+struct TreeNode
+{
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode() : val(0), left(nullptr), right(nullptr) {}
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+
+    /**
+     * 打印
+     */
+    void print()
+    {
+        // 前序遍历，根左右
+        travelBefore(this);
+    }
+
+    void travelBefore(TreeNode *node)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        std::cout << "node:" << node->val << std::endl;
+        travelBefore(node->left);
+        travelBefore(node->right);
+    }
+};

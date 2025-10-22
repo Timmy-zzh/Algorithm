@@ -6,7 +6,7 @@
 #include <random>
 #include <stack>
 #include <queue>
-// #include "src/bean.h"
+#include "src/bean.h"
 
 /**
  * 感想：
@@ -21,70 +21,138 @@
 using namespace std;
 
 /**
-LCR 042. 最近的请求次数
-https://leetcode.cn/problems/H8086Q/description/
+LCR 044. 在每个树行中找最大值
+https://leetcode.cn/problems/hPov7L/description/
 
-写一个 RecentCounter 类来计算特定时间范围内最近的请求。
-请实现 RecentCounter 类：
-RecentCounter() 初始化计数器，请求数为 0 。
-int ping(int t) 在时间 t 添加一个新请求，其中 t 表示以毫秒为单位的某个时间，并返回过去 3000 毫秒内发生的所有请求数（包括新请求）。确切地说，返回在 [t-3000, t] 内发生的请求数。
-保证 每次对 ping 的调用都使用比之前更大的 t 值。
+给定一棵二叉树的根节点 root ，请找出该二叉树中每一层的最大值。
 
-示例：
-输入：
-inputs = ["RecentCounter", "ping", "ping", "ping", "ping"]
-inputs = [[], [1], [100], [3001], [3002]]
-输出：
-[null, 1, 2, 3, 3]
+示例 1：
+输入: root = [1,3,2,5,3,null,9]
+输出: [1,3,9]
+解释:
+          1
+         / \
+        3   2
+       / \   \
+      5   3   9
 
-解释：
-RecentCounter recentCounter = new RecentCounter();
-recentCounter.ping(1);     // requests = [1]，范围是 [-2999,1]，返回 1
-recentCounter.ping(100);   // requests = [1, 100]，范围是 [-2900,100]，返回 2
-recentCounter.ping(3001);  // requests = [1, 100, 3001]，范围是 [1,3001]，返回 3
-recentCounter.ping(3002);  // requests = [1, 100, 3001, 3002]，范围是 [2,3002]，返回 3
+示例 2：
+输入: root = [1,2,3]
+输出: [1,3]
+解释:
+          1
+         / \
+        2   3
+
+示例 3：
+输入: root = [1]
+输出: [1]
+
+示例 4：
+输入: root = [1,null,2]
+输出: [1,2]
+解释:
+           1
+            \
+             2
+
+示例 5：
+输入: root = []
+输出: []
 
 提示：
-1 <= t <= 109
-保证每次对 ping 调用所使用的 t 值都 严格递增
-至多调用 ping 方法 104 次
+二叉树的节点个数的范围是 [0,104]
+-231 <= Node.val <= 231 - 1
  */
 
 /**
- * 1、审题：
- * - 实现一个类，统计最新3000毫秒时间内的发生的请求次数并返回
- * 2、解题：
- * - 每次请求时，都使用queue队列保存数据，并插入到队尾位置
- * - 插入完成后，再取出队头位置的元素时间，判断该时间发起的请求是否在当前时间和3000秒时间范围内，超过时间范围的话，则队头元素出队列，使用while不断循环判断
- * - 最后返回队列元素的个数
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
  */
-class RecentCounter
+
+/**
+ * 解法3：双队列法
+ *
+ */
+
+/**
+ * 解法2：计数法
+ *
+ */
+vector<int> largestValues(TreeNode *root)
 {
-public:
-  RecentCounter()
+}
+
+/**
+ * 二叉树与队列的使用
+ * 1、审题：
+ * - 输入一棵二叉树，要求找到二叉树每一层节点中的最大值，组成一个集合并返回
+ * 2、审题：
+ * - 核心在于遍历树的每一层节点，并从中找到最大值
+ * - 可以通过树的层序遍历，问题在于如何知道刚好遍历完树的一层结点？
+ * 方式1：在遍历的过程中，每层遍历完插入一个空的结点，当遍历到空节点时，就取出最大值
+ */
+vector<int> largestValues1(TreeNode *root)
+{
+  std::vector<int> res;
+  std::queue<TreeNode *> queue;
+  if (root == nullptr)
   {
+    return res;
   }
 
-  int ping(int t)
-  {
-    // 入队列
-    queue.push(t);
+  queue.push(root);
+  queue.push(nullptr);
+  int max = INT32_MIN;
 
-    // 取出队头元素
-    while (queue.front() + 3000 < t)
+  while (!queue.empty())
+  {
+    TreeNode *node = queue.front();
+    queue.pop();
+
+    if (node == nullptr)
     {
-      queue.pop();
+      if (!queue.empty())
+      {
+        queue.push(nullptr);
+      }
+
+      res.push_back(max);
+      max = INT32_MIN;
     }
-    return queue.size();
+    else
+    {
+      // 不为空，取出该结点
+      max = std::max(node->val, max);
+      if (node->left != nullptr)
+      {
+        queue.push(node->left);
+      }
+
+      if (node->right != nullptr)
+      {
+        queue.push(node->right);
+      }
+    }
   }
 
-private:
-  std::queue<int> queue;
-};
+  return res;
+}
 
 int main()
 {
   std::cout << "Hello, Algorithm!" << std::endl;
+
+  // CBTInserter *obj = new CBTInserter(root);
+  // int param_1 = obj->insert(v);
+  // TreeNode *param_2 = obj->get_root();
 
   // vector<string> matrix = {"10100", "10111", "11111", "10010"};
 
