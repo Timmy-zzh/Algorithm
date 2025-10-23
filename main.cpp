@@ -79,15 +79,151 @@ https://leetcode.cn/problems/hPov7L/description/
 
 /**
  * 解法3：双队列法
- *
- */
-
-/**
- * 解法2：计数法
- *
+ * - 解法2使用current值来标记当前层的个数，也可以采用两个队列来替换，当前队列保存当前层需要遍历的元素
+ * - next队列保存下一层需要遍历的元素，当current的值减少为0时，进行队列的替换
  */
 vector<int> largestValues(TreeNode *root)
 {
+  std::queue<TreeNode *> currQueue;
+  std::queue<TreeNode *> nextQueue;
+  int max = INT32_MIN;
+  int current = 0;
+  std::vector<int> res;
+  if (root == nullptr)
+  {
+    return res;
+  }
+  currQueue.push(root);
+  current = 1;
+
+  while (!currQueue.empty())
+  {
+    TreeNode *node = currQueue.front();
+    currQueue.pop();
+
+    if (node->left != nullptr)
+    {
+      nextQueue.push(node->left);
+    }
+    if (node->right != nullptr)
+    {
+      nextQueue.push(node->right);
+    }
+
+    current--;
+    max = std::max(max, node->val);
+    if (current == 0)
+    {
+      res.push_back(max);
+      currQueue = nextQueue;
+      current = currQueue.size();
+
+      nextQueue = std::queue<TreeNode *>();
+      max = INT32_MIN;
+    }
+  }
+
+  return res;
+}
+
+/**
+ * 解法2：计数法
+ * - 在层序遍历过程中，记录每层的数量，使用两个变量current和next
+ * - current标记当前层的结点个数，next记录下一层结点的个数，遍历的时候当前层个数current不断减少，next的值不断增加
+ * - 当current为0时，说明当前层所有结点都遍历完成后，此时获取出这一层的最大值保存到集合中，并将current的值设置为next的值，从而开始下一层级的遍历
+ * -- 其实next的值就等于遍历过程中队列中元素的个数
+ */
+vector<int> largestValues(TreeNode *root)
+{
+  std::vector<int> res;
+  std::queue<TreeNode *> queue;
+  int current = 0;
+  int max = INT32_MIN;
+  if (root == nullptr)
+  {
+    return res;
+  }
+
+  // 根节点入队列
+  queue.push(root);
+  current = 1;
+
+  while (!queue.empty())
+  {
+    TreeNode *node = queue.front();
+    queue.pop();
+
+    if (node->left != nullptr)
+    {
+      queue.push(node->left);
+    }
+
+    if (node->right != nullptr)
+    {
+      queue.push(node->right);
+    }
+
+    // 计算处理
+    current--;
+    max = std::max(max, node->val);
+    if (current == 0) // 当前一层遍历完了
+    {
+      res.push_back(max);
+      current = queue.size();
+      max = INT32_MIN;
+    }
+  }
+
+  return res;
+}
+
+vector<int> largestValues2(TreeNode *root)
+{
+  std::vector<int> res;
+  std::queue<TreeNode *> queue;
+  int current = 0;
+  int next = 0;
+  int max = INT32_MIN;
+  if (root == nullptr)
+  {
+    return res;
+  }
+
+  // 根节点入队列
+  queue.push(root);
+  current = 1;
+
+  while (!queue.empty())
+  {
+    TreeNode *node = queue.front();
+    queue.pop();
+
+    if (node->left != nullptr)
+    {
+      queue.push(node->left);
+      next++;
+    }
+
+    if (node->right != nullptr)
+    {
+      queue.push(node->right);
+      next++;
+    }
+
+    // 计算处理
+    current--;
+    max = std::max(max, node->val);
+    if (current == 0)
+    {
+      res.push_back(max);
+      current = next;
+      // current = queue.size();
+      next = 0;
+      max = INT32_MIN;
+    }
+  }
+
+  return res;
 }
 
 /**
@@ -97,7 +233,7 @@ vector<int> largestValues(TreeNode *root)
  * 2、审题：
  * - 核心在于遍历树的每一层节点，并从中找到最大值
  * - 可以通过树的层序遍历，问题在于如何知道刚好遍历完树的一层结点？
- * 方式1：在遍历的过程中，每层遍历完插入一个空的结点，当遍历到空节点时，就取出最大值
+ * 解法1：在遍历的过程中，每层遍历完插入一个空的结点，当遍历到空节点时，就取出最大值
  */
 vector<int> largestValues1(TreeNode *root)
 {
