@@ -21,26 +21,32 @@
 using namespace std;
 
 /**
-LCR 046. 二叉树的右视图
-https://leetcode.cn/problems/WNC0Lk/description/
+LCR 047. 二叉树剪枝
+https://leetcode.cn/problems/pOCWxh/description/
 
-给定一个二叉树的 根节点 root，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+给定一个二叉树 根节点 root ，树的每个节点的值要么是 0，要么是 1。请剪除该二叉树中所有节点的值为 0 的子树。
+节点 node 的子树为 node 本身，以及所有 node 的后代。
 
 示例 1：
-输入: [1,2,3,null,5,null,4]
-输出: [1,3,4]
+输入: [1,null,0,0,1]
+输出: [1,null,0,null,1]
+解释:
+只有红色节点满足条件“所有不包含 1 的子树”。
+右图为返回的答案。
 
 示例 2：
-输入: [1,null,3]
-输出: [1,3]
+输入: [1,0,1,0,0,0,1]
+输出: [1,null,1,null,1]
+解释:
 
 示例 3：
-输入: []
-输出: []
+输入: [1,1,0,1,1,0,1,0]
+输出: [1,1,0,1,1,null,1]
+解释:
 
 提示：
-二叉树的节点个数的范围是 [0,100]
--100 <= Node.val <= 100
+二叉树的节点个数的范围是 [1,200]
+二叉树节点的值只会是 0 或 1
  */
 
 /**
@@ -55,47 +61,8 @@ https://leetcode.cn/problems/WNC0Lk/description/
  * };
  */
 
-/**
- * 1、审题：
- * - 输入一棵二叉树，想象自己站在树的右侧看这棵二叉树，则看到的是二叉树每一层最右边结点的值，将每一层的值从根节点往下放入队列中返回
- * 2、解题：
- * - 还是二叉树的层序遍历，使用双队列解法，每一层遍历结束都将下一层队列中的最后一个元素取出来， 该元素就是每层最右边结点
- */
-vector<int> rightSideView(TreeNode *root)
+TreeNode *pruneTree(TreeNode *root)
 {
-  std::queue<TreeNode *> queue1;
-  std::queue<TreeNode *> queue2;
-  std::vector<int> res;
-  if (root == nullptr)
-  {
-    return res;
-  }
-  queue1.push(root);
-  res.push_back(queue1.back()->val);
-
-  while (!queue1.empty())
-  {
-    TreeNode *node = queue1.front();
-    queue1.pop();
-
-    if (node->left != nullptr)
-    {
-      queue2.push(node->left);
-    }
-    if (node->right != nullptr)
-    {
-      queue2.push(node->right);
-    }
-
-    if (queue1.empty() && !queue2.empty())
-    {
-      queue1 = queue2;
-      queue2 = std::queue<TreeNode *>();
-      res.push_back(queue1.back()->val);
-    }
-  }
-
-  return res;
 }
 
 int main()
