@@ -63,78 +63,78 @@ https://leetcode.cn/problems/WNC0Lk/description/
  */
 vector<int> rightSideView(TreeNode *root)
 {
-  std::queue<TreeNode *> queue1;
-  std::queue<TreeNode *> queue2;
-  std::vector<int> res;
-  if (root == nullptr)
-  {
+    std::queue<TreeNode *> queue1;
+    std::queue<TreeNode *> queue2;
+    std::vector<int> res;
+    if (root == nullptr)
+    {
+        return res;
+    }
+    queue1.push(root);
+    res.push_back(queue1.back()->val);
+
+    while (!queue1.empty())
+    {
+        TreeNode *node = queue1.front();
+        queue1.pop();
+
+        if (node->left != nullptr)
+        {
+            queue2.push(node->left);
+        }
+        if (node->right != nullptr)
+        {
+            queue2.push(node->right);
+        }
+
+        if (queue1.empty() && !queue2.empty())
+        {
+            queue1 = queue2;
+            queue2 = std::queue<TreeNode *>();
+            res.push_back(queue1.back()->val);
+        }
+    }
+
     return res;
-  }
-  queue1.push(root);
-  res.push_back(queue1.back()->val);
-
-  while (!queue1.empty())
-  {
-    TreeNode *node = queue1.front();
-    queue1.pop();
-
-    if (node->left != nullptr)
-    {
-      queue2.push(node->left);
-    }
-    if (node->right != nullptr)
-    {
-      queue2.push(node->right);
-    }
-
-    if (queue1.empty() && !queue2.empty())
-    {
-      queue1 = queue2;
-      queue2 = std::queue<TreeNode *>();
-      res.push_back(queue1.back()->val);
-    }
-  }
-
-  return res;
 }
 
 int main()
 {
-  std::cout << "Hello, Algorithm!" << std::endl;
+    std::cout << "Hello, Algorithm!" << std::endl;
 
-  // CBTInserter *obj = new CBTInserter(root);
-  // int param_1 = obj->insert(v);
-  // TreeNode *param_2 = obj->get_root();
+    // CBTInserter *obj = new CBTInserter(root);
+    // int param_1 = obj->insert(v);
+    // TreeNode *param_2 = obj->get_root();
 
-  // vector<string> matrix = {"10100", "10111", "11111", "10010"};
+    // vector<string> matrix = {"10100", "10111", "11111", "10010"};
 
-  // for (auto ele : matrix)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // for (auto ele : matrix)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // auto res = maximalRectangle(matrix);
+    // auto res = maximalRectangle(matrix);
 
-  // std::cout << "res:" << res << std::endl;
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }

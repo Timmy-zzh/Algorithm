@@ -21,26 +21,23 @@
 using namespace std;
 
 /**
-LCR 046. 二叉树的右视图
-https://leetcode.cn/problems/WNC0Lk/description/
+LCR 045. 找树左下角的值
+https://leetcode.cn/problems/LwUNpT/description/
 
-给定一个二叉树的 根节点 root，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+给定一个二叉树的 根节点 root，请找出该二叉树的 最底层 最左边 节点的值。
+假设二叉树中至少有一个节点。
 
 示例 1：
-输入: [1,2,3,null,5,null,4]
-输出: [1,3,4]
+输入: root = [2,1,3]
+输出: 1
 
 示例 2：
-输入: [1,null,3]
-输出: [1,3]
-
-示例 3：
-输入: []
-输出: []
+输入: [1,2,3,4,null,5,6,null,null,7]
+输出: 7
 
 提示：
-二叉树的节点个数的范围是 [0,100]
--100 <= Node.val <= 100
+二叉树的节点个数的范围是 [1,104]
+-231 <= Node.val <= 231 - 1
  */
 
 /**
@@ -57,27 +54,23 @@ https://leetcode.cn/problems/WNC0Lk/description/
 
 /**
  * 1、审题：
- * - 输入一棵二叉树，想象自己站在树的右侧看这棵二叉树，则看到的是二叉树每一层最右边结点的值，将每一层的值从根节点往下放入队列中返回
- * 2、解题：
- * - 还是二叉树的层序遍历，使用双队列解法，每一层遍历结束都将下一层队列中的最后一个元素取出来， 该元素就是每层最右边结点
+ * - 输入一棵二叉树，要求该二叉最低一层最左边节点的数值
+ * 2、解题：双队列解法
+ * - 对二叉树进行层序遍历，使用两个队列保存遍历到的每一层的结点值
+ * - 在遍历完一层结点后，取出队列的队头元素，该值就是这一层最左边的结点值
  */
-vector<int> rightSideView(TreeNode *root)
+int findBottomLeftValue(TreeNode *root)
 {
   std::queue<TreeNode *> queue1;
   std::queue<TreeNode *> queue2;
-  std::vector<int> res;
-  if (root == nullptr)
-  {
-    return res;
-  }
   queue1.push(root);
-  res.push_back(queue1.back()->val);
+  int bottomLeft = queue1.front()->val;
 
   while (!queue1.empty())
   {
+    // 取出1队列的头结点,并出队列
     TreeNode *node = queue1.front();
     queue1.pop();
-
     if (node->left != nullptr)
     {
       queue2.push(node->left);
@@ -86,16 +79,14 @@ vector<int> rightSideView(TreeNode *root)
     {
       queue2.push(node->right);
     }
-
     if (queue1.empty() && !queue2.empty())
-    {
+    { // 队列1全部遍历完成，赋值队列2的数据给到队列1
       queue1 = queue2;
       queue2 = std::queue<TreeNode *>();
-      res.push_back(queue1.back()->val);
+      bottomLeft = queue1.front()->val;
     }
   }
-
-  return res;
+  return bottomLeft;
 }
 
 int main()
