@@ -63,21 +63,21 @@ https://leetcode.cn/problems/P5rCT8/description/
  */
 TreeNode *inorderSuccessor(TreeNode *root, TreeNode *p)
 {
-  TreeNode *result = nullptr;
-  TreeNode *curr = root;
-  while (curr != nullptr)
-  {
-    if (curr->val > p->val)
+    TreeNode *result = nullptr;
+    TreeNode *curr = root;
+    while (curr != nullptr)
     {
-      result = curr;
-      curr = curr->left;
+        if (curr->val > p->val)
+        {
+            result = curr;
+            curr = curr->left;
+        }
+        else
+        {
+            curr = curr->right;
+        }
     }
-    else
-    {
-      curr = curr->right;
-    }
-  }
-  return result;
+    return result;
 }
 
 /**
@@ -88,83 +88,83 @@ TreeNode *inorderSuccessor(TreeNode *root, TreeNode *p)
  */
 TreeNode *inorderSuccessor1(TreeNode *root, TreeNode *p)
 {
-  std::stack<TreeNode *> stack;
-  TreeNode *curr = root;
-  bool found = false;
-  while (curr != nullptr || !stack.empty())
-  {
-    while (curr != nullptr)
+    std::stack<TreeNode *> stack;
+    TreeNode *curr = root;
+    bool found = false;
+    while (curr != nullptr || !stack.empty())
     {
-      stack.push(curr);
-      curr = curr->left;
-    }
-    curr = stack.top();
-    stack.pop();
+        while (curr != nullptr)
+        {
+            stack.push(curr);
+            curr = curr->left;
+        }
+        curr = stack.top();
+        stack.pop();
 
-    if (found)
-    {
-      return curr;
-    }
+        if (found)
+        {
+            return curr;
+        }
 
-    if (curr->val == p->val)
-    {
-      found = true;
+        if (curr->val == p->val)
+        {
+            found = true;
+        }
+        curr = curr->right;
     }
-    curr = curr->right;
-  }
-  return nullptr;
+    return nullptr;
 }
 
 int main()
 {
-  std::cout << "Hello, Algorithm!" << std::endl;
+    std::cout << "Hello, Algorithm!" << std::endl;
 
-  TreeNode node1(1);
-  TreeNode node2(2);
-  TreeNode node3(3);
-  TreeNode node4(4);
-  TreeNode node5(5);
-  TreeNode node6(6);
-  TreeNode node7(7);
+    TreeNode node1(1);
+    TreeNode node2(2);
+    TreeNode node3(3);
+    TreeNode node4(4);
+    TreeNode node5(5);
+    TreeNode node6(6);
+    TreeNode node7(7);
 
-  node1.left = &node2;
-  node1.right = &node3;
+    node1.left = &node2;
+    node1.right = &node3;
 
-  node2.left = &node4;
-  node2.right = &node5;
+    node2.left = &node4;
+    node2.right = &node5;
 
-  node3.left = &node6;
-  node3.right = &node7;
+    node3.left = &node6;
+    node3.right = &node7;
 
-  // vector<string> matrix = {"10100", "10111", "11111", "10010"};
+    // vector<string> matrix = {"10100", "10111", "11111", "10010"};
 
-  // for (auto ele : matrix)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // for (auto ele : matrix)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // auto res = maximalRectangle(matrix);
+    // auto res = maximalRectangle(matrix);
 
-  // std::cout << "res:" << res << std::endl;
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }

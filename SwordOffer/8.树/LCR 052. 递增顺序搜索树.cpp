@@ -33,64 +33,40 @@ using namespace std;
  */
 
 /**
-LCR 053. 二叉搜索树中的中序后继
-https://leetcode.cn/problems/P5rCT8/description/
+LCR 052. 递增顺序搜索树
+https://leetcode.cn/problems/NYBBNL/description/
 
-给定一棵二叉搜索树和其中的一个节点 p ，找到该节点在树中的中序后继。如果节点没有中序后继，请返回 null 。
-节点 p 的后继是值比 p.val 大的节点中键值最小的节点，即按中序遍历的顺序节点 p 的下一个节点。
+给你一棵二叉搜索树，请 按中序遍历 将其重新排列为一棵递增顺序搜索树，使树中最左边的节点成为树的根节点，
+并且每个节点没有左子节点，只有一个右子节点。
 
 示例 1：
-输入：root = [2,1,3], p = 1
-输出：2
-解释：这里 1 的中序后继是 2。请注意 p 和返回值都应是 TreeNode 类型。
+输入：root = [5,3,6,2,4,null,8,1,null,null,null,7,9]
+输出：[1,null,2,null,3,null,4,null,5,null,6,null,7,null,8,null,9]
 
 示例 2：
-输入：root = [5,3,6,2,4,null,null,1], p = 6
-输出：null
-解释：因为给出的节点没有中序后继，所以答案就返回 null 了。
+输入：root = [5,1,7]
+输出：[1,null,5,null,7]
 
 提示：
-树中节点的数目在范围 [1, 104] 内。
--105 <= Node.val <= 105
-树中各节点的值均保证唯一。
+树中节点数的取值范围是 [1, 100]
+0 <= Node.val <= 1000
  */
-
-/**
- * 解题2：二叉搜索树解法
- * - 根据二叉搜索树特性，左子树所有结点值比根节点值小，右子树所有节点值比根节点值大，
- * - 从根节点开始遍历，如果遍历到的当前节点值比目标节点p的值要小，则继续遍历大的右子树结点
- * - 如果遍历到的当前结点值比目标值大，则继续寻找他的左子节点，因为他的左子结点肯定也比当前结点值要大（如果有的话）
- */
-TreeNode *inorderSuccessor(TreeNode *root, TreeNode *p)
-{
-  TreeNode *result = nullptr;
-  TreeNode *curr = root;
-  while (curr != nullptr)
-  {
-    if (curr->val > p->val)
-    {
-      result = curr;
-      curr = curr->left;
-    }
-    else
-    {
-      curr = curr->right;
-    }
-  }
-  return result;
-}
 
 /**
  * 1、审题：
- * - 输入一棵二叉搜索树，和其中一个节点p，要求按照中序遍历的顺序找到节点p的下一个节点，并返回，没有则返回null
+ * - 输入一棵二叉搜索树，要求将该二叉搜索树转变成只有右子节点的递增顺序搜索树
  * 2、解题：
- * - 迭代方式遍历二叉搜索树，使用一个变量记录是否找到了与节点p相同的结点，如果找到了，则下一个节点就是目标值了
+ * - 二叉搜索树的定义是左子树节点值全部小于根节点值，而右子树结点值全部大于根节点值，左右子树也是一样的情况
+ * - 要将原先的二叉树搜索树，转变成单条链的递增搜索树，意思是新的二叉树只有右子节点且还是二叉搜索树，则新的二叉树的根节点值最小，右子节点不断递增
+ * - 采用中序遍历二叉搜索树，迭代代码方式，在遍历的过程中组装成新的递增搜索树
  */
-TreeNode *inorderSuccessor1(TreeNode *root, TreeNode *p)
+TreeNode *increasingBST(TreeNode *root)
 {
-  std::stack<TreeNode *> stack;
+  TreeNode *first = nullptr;
   TreeNode *curr = root;
-  bool found = false;
+  TreeNode *prev = nullptr;
+  std::stack<TreeNode *> stack;
+
   while (curr != nullptr || !stack.empty())
   {
     while (curr != nullptr)
@@ -98,21 +74,24 @@ TreeNode *inorderSuccessor1(TreeNode *root, TreeNode *p)
       stack.push(curr);
       curr = curr->left;
     }
+
+    // 从栈中取出栈顶元素
     curr = stack.top();
     stack.pop();
 
-    if (found)
+    if (prev != nullptr)
     {
-      return curr;
+      prev->right = curr;
     }
-
-    if (curr->val == p->val)
+    else
     {
-      found = true;
+      first = curr;
     }
+    prev = curr;
+    prev->left = nullptr;
     curr = curr->right;
   }
-  return nullptr;
+  return first;
 }
 
 int main()

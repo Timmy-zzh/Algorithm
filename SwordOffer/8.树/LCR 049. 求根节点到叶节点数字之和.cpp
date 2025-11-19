@@ -33,92 +33,67 @@ using namespace std;
  */
 
 /**
-LCR 047. 二叉树剪枝
-https://leetcode.cn/problems/pOCWxh/description/
+LCR 049. 求根节点到叶节点数字之和
+https://leetcode.cn/problems/3Etpl5/description/
 
-给定一个二叉树 根节点 root ，树的每个节点的值要么是 0，要么是 1。请剪除该二叉树中所有节点的值为 0 的子树。
-节点 node 的子树为 node 本身，以及所有 node 的后代。
+给定一个二叉树的根节点 root ，树中每个节点都存放有一个 0 到 9 之间的数字。
+每条从根节点到叶节点的路径都代表一个数字：
+
+例如，从根节点到叶节点的路径 1 -> 2 -> 3 表示数字 123 。
+计算从根节点到叶节点生成的 所有数字之和 。
+叶节点 是指没有子节点的节点。
 
 示例 1：
-输入: [1,null,0,0,1]
-输出: [1,null,0,null,1]
-解释:
-只有红色节点满足条件“所有不包含 1 的子树”。
-右图为返回的答案。
+输入：root = [1,2,3]
+输出：25
+解释：
+从根到叶子节点路径 1->2 代表数字 12
+从根到叶子节点路径 1->3 代表数字 13
+因此，数字总和 = 12 + 13 = 25
 
 示例 2：
-输入: [1,0,1,0,0,0,1]
-输出: [1,null,1,null,1]
-解释:
-
-示例 3：
-输入: [1,1,0,1,1,0,1,0]
-输出: [1,1,0,1,1,null,1]
-解释:
+输入：root = [4,9,0,5,1]
+输出：1026
+解释：
+从根到叶子节点路径 4->9->5 代表数字 495
+从根到叶子节点路径 4->9->1 代表数字 491
+从根到叶子节点路径 4->0 代表数字 40
+因此，数字总和 = 495 + 491 + 40 = 1026
 
 提示：
-二叉树的节点个数的范围是 [1,200]
-二叉树节点的值只会是 0 或 1
+树中节点的数目在范围 [1, 1000] 内
+0 <= Node.val <= 9
+树的深度不超过 10
  */
-
-bool pruneTreeTravel(TreeNode *node)
-{
-    if (node == nullptr)
-    {
-        return false;
-    }
-    bool leftRes = pruneTreeTravel(node->left);
-    bool rightRes = pruneTreeTravel(node->right);
-    if (!leftRes)
-    {
-        node->left = nullptr;
-    }
-    if (!rightRes)
-    {
-        node->right = nullptr;
-    }
-    if (node->val == 0 && node->left == nullptr && node->right == nullptr)
-    {
-        return false;
-    }
-    return true;
-}
 
 /**
  * 1、审题：
- * - 输入一棵二叉树，二叉树中结点的值分别为0或1，要求将树中结点都为0的节点进行删除
+ * - 输入一棵二叉树，二叉树中结点值的数据范围为0到9的数字，现在要求找到从根节点到叶子结点组合成的数字，并将這些数字全部相加
  * 2、解题：
- * - 将节点值为0的树删除，当叶子节点值为0时，该结点要删除
- * - 当一棵子树，根节点为0，且左右子节点也全是0的时候，这棵子树也需要删除
- * - 界面删除对于其父节点来说，就是将父节点的左右子节点的值设置为null
- * - 要删除左右子节点为0的树，使用后续遍历，先找到左右子节点，判断左右子树的节点值是否全是0，是0的话返回false，不全是0返回true
- * -- 后续遍历的节点值，根据左右子树的返回值，判断其左右子节点是否需要删除
+ * - 使用前序遍历，将从根节点到叶子结点的组成的数字全部返回，组成数字的规则，是在之前的数字基础上乘以10再加上当前遍历的节点值
+ * - 如果遍历到了空节点则返回0，如果遍历到了叶子结点则返回当前遍历到的数据，如果还存在左右子节点，则继续前序遍历，返回左右子树的组合数字之和
  */
-TreeNode *pruneTree1(TreeNode *root)
+int dfs(TreeNode *node, int num)
 {
-    bool res = pruneTreeTravel(root);
-    if (!res)
+    if (node == nullptr)
     {
-        return nullptr;
+        return 0;
     }
-    return root;
+    // 到当前结点的路径和
+    int path = num * 10 + node->val;
+    // 叶子结点
+    if (node->left == nullptr && node->right == nullptr)
+    {
+        return path;
+    }
+
+    // 还存在左右子树
+    return dfs(node->left, path) + dfs(node->right, path);
 }
 
-TreeNode *pruneTree(TreeNode *root)
+int sumNumbers(TreeNode *root)
 {
-    if (root == nullptr)
-    {
-        return nullptr;
-    }
-
-    root->left = pruneTree(root->left);
-    root->right = pruneTree(root->right);
-
-    if (root->val == 0 && root->left == nullptr && root->right == nullptr)
-    {
-        return nullptr;
-    }
-    return root;
+    return dfs(root, 0);
 }
 
 int main()
