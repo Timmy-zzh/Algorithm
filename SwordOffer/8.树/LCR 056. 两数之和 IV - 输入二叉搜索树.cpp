@@ -33,40 +33,41 @@ using namespace std;
  */
 
 /**
-LCR 052. 递增顺序搜索树
-https://leetcode.cn/problems/NYBBNL/description/
+LCR 056. 两数之和 IV - 输入二叉搜索树
+https://leetcode.cn/problems/opLdQZ/description/
 
-给你一棵二叉搜索树，请 按中序遍历 将其重新排列为一棵递增顺序搜索树，使树中最左边的节点成为树的根节点，
-并且每个节点没有左子节点，只有一个右子节点。
+给定一个二叉搜索树的 根节点 root 和一个整数 k , 请判断该二叉搜索树中是否存在两个节点它们的值之和等于 k 。假设二叉搜索树中节点的值均唯一。
 
 示例 1：
-输入：root = [5,3,6,2,4,null,8,1,null,null,null,7,9]
-输出：[1,null,2,null,3,null,4,null,5,null,6,null,7,null,8,null,9]
+输入: root = [8,6,10,5,7,9,11], k = 12
+输出: true
+解释: 节点 5 和节点 7 之和等于 12
 
 示例 2：
-输入：root = [5,1,7]
-输出：[1,null,5,null,7]
+输入: root = [8,6,10,5,7,9,11], k = 22
+输出: false
+解释: 不存在两个节点值之和为 22 的节点
 
 提示：
-树中节点数的取值范围是 [1, 100]
-0 <= Node.val <= 1000
+二叉树的节点个数的范围是  [1, 104].
+-104 <= Node.val <= 104
+root 为二叉搜索树
+-105 <= k <= 105
  */
 
 /**
  * 1、审题：
- * - 输入一棵二叉搜索树，要求将该二叉搜索树转变成只有右子节点的递增顺序搜索树
+ * - 输入一棵二叉搜索树和目标值k，要求查找二叉树中是否存在两个节点的值之和等于目标值k，并返回结果
  * 2、解题：
- * - 二叉搜索树的定义是左子节点值全部小于根节点值，而右子结点值全部大于根节点值，左右子树也是一样的情况
- * - 要将原先的二叉树搜索树，转变成单条链的递增搜索树，意思是新的二叉树只有右子节点且还是二叉搜索树，则新的二叉树的根节点值最小，右子节点不断递增
- * - 采用中序遍历二叉搜索树，迭代代码方式，在遍历的过程中组装成新的递增搜索树
- * - 将中序遍历到的结点值，插入到新二叉搜索树的右子节点
+ * - 哈希表+中序遍历解法：中序遍历过程中使用哈希表map保存遍历到的节点值，并判断是否存在k-val的值，在之前是否存在
+ * - 双指针+二分法查找：因为输入的二叉搜索树中序遍历是升序的，可采用二分查找方法，分别从二叉树的前后最大最小值节点开始遍历
+ * -- 如果两个节点值和等于目标值则返回，如果和大于目标值，则右侧最大节点值左移，否则左侧最小值右移
  */
-TreeNode *increasingBST(TreeNode *root)
+bool findTarget(TreeNode *root, int k)
 {
-  TreeNode *first = nullptr;
-  TreeNode *curr = root;
-  TreeNode *prev = nullptr;
+  std::vector<int> vector;
   std::stack<TreeNode *> stack;
+  TreeNode *curr = root;
 
   while (curr != nullptr || !stack.empty())
   {
@@ -76,23 +77,16 @@ TreeNode *increasingBST(TreeNode *root)
       curr = curr->left;
     }
 
-    // 从栈中取出栈顶元素
     curr = stack.top();
     stack.pop();
-
-    if (prev != nullptr)
+    if (find(vector.begin(), vector.end(), k - curr->val) != vector.end())
     {
-      prev->right = curr;
+      return true;
     }
-    else
-    {
-      first = curr;
-    }
-    prev = curr;
-    prev->left = nullptr;
+    vector.push_back(curr->val);
     curr = curr->right;
   }
-  return first;
+  return false;
 }
 
 int main()

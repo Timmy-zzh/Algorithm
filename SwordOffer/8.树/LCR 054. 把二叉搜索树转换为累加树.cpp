@@ -33,66 +33,71 @@ using namespace std;
  */
 
 /**
-LCR 052. 递增顺序搜索树
-https://leetcode.cn/problems/NYBBNL/description/
+LCR 054. 把二叉搜索树转换为累加树
+https://leetcode.cn/problems/w6cpku/description/
 
-给你一棵二叉搜索树，请 按中序遍历 将其重新排列为一棵递增顺序搜索树，使树中最左边的节点成为树的根节点，
-并且每个节点没有左子节点，只有一个右子节点。
+给定一个二叉搜索树，请将它的每个节点的值替换成树中大于或者等于该节点值的所有节点值之和。
+提醒一下，二叉搜索树满足下列约束条件：
+节点的左子树仅包含键 小于 节点键的节点。
+节点的右子树仅包含键 大于 节点键的节点。
+左右子树也必须是二叉搜索树。
 
 示例 1：
-输入：root = [5,3,6,2,4,null,8,1,null,null,null,7,9]
-输出：[1,null,2,null,3,null,4,null,5,null,6,null,7,null,8,null,9]
+输入：root = [4,1,6,0,2,5,7,null,null,null,3,null,null,null,8]
+输出：[30,36,21,36,35,26,15,null,null,null,33,null,null,null,8]
 
 示例 2：
-输入：root = [5,1,7]
-输出：[1,null,5,null,7]
+输入：root = [0,null,1]
+输出：[1,null,1]
+
+示例 3：
+输入：root = [1,0,2]
+输出：[3,3,2]
+
+示例 4：
+输入：root = [3,2,4,1]
+输出：[7,9,4,10]
 
 提示：
-树中节点数的取值范围是 [1, 100]
-0 <= Node.val <= 1000
+树中的节点数介于 0 和 104 之间。
+每个节点的值介于 -104 和 104 之间。
+树中的所有值 互不相同 。
+给定的树为二叉搜索树。
  */
 
 /**
  * 1、审题：
- * - 输入一棵二叉搜索树，要求将该二叉搜索树转变成只有右子节点的递增顺序搜索树
+ * - 输入一棵二叉搜索树，要求将该二叉树中的结点值替换为，比当前节点值大的所有结点的累加和
  * 2、解题：
- * - 二叉搜索树的定义是左子节点值全部小于根节点值，而右子结点值全部大于根节点值，左右子树也是一样的情况
- * - 要将原先的二叉树搜索树，转变成单条链的递增搜索树，意思是新的二叉树只有右子节点且还是二叉搜索树，则新的二叉树的根节点值最小，右子节点不断递增
- * - 采用中序遍历二叉搜索树，迭代代码方式，在遍历的过程中组装成新的递增搜索树
- * - 将中序遍历到的结点值，插入到新二叉搜索树的右子节点
+ * - 因为题目输入的是一个二叉搜索树，按照中序遍历得到的结点集合是升序排列的，那要找出比当前结点值大的结点，也就是中序遍历中该界面后面的所有结点
+ * - 但是中序遍历是从左子树开始遍历的，可以将遍历顺序反过来，先遍历右子节点，接着遍历根节点，最后遍历左子结点，
+ * - 在遍历过程中使用遍历sum获取节点累计和，并更新当前结点的值为sum即可
  */
-TreeNode *increasingBST(TreeNode *root)
+TreeNode *convertBST(TreeNode *root)
 {
-  TreeNode *first = nullptr;
-  TreeNode *curr = root;
-  TreeNode *prev = nullptr;
   std::stack<TreeNode *> stack;
+  TreeNode *curr = root;
+  int sum = 0;
 
   while (curr != nullptr || !stack.empty())
   {
+    // 使用while循环，不断获取右侧子节点，放入栈中
     while (curr != nullptr)
     {
       stack.push(curr);
-      curr = curr->left;
+      curr = curr->right;
     }
 
-    // 从栈中取出栈顶元素
+    // 取出栈中节点，并指向他的左子结点
     curr = stack.top();
     stack.pop();
 
-    if (prev != nullptr)
-    {
-      prev->right = curr;
-    }
-    else
-    {
-      first = curr;
-    }
-    prev = curr;
-    prev->left = nullptr;
-    curr = curr->right;
+    sum += curr->val;
+    curr->val = sum;
+
+    curr = curr->left;
   }
-  return first;
+  return root;
 }
 
 int main()
