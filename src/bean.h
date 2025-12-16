@@ -120,3 +120,55 @@ struct TreeNode
         travelBefore(node->right);
     }
 };
+
+/**
+ * 前缀树节点
+ */
+class TrieNode
+{
+public:
+    bool isWord = false;
+    TrieNode *children[26]; // 数组
+
+    TrieNode()
+    {
+        for (int i = 0; i < 26; i++)
+        {
+            children[i] = nullptr;
+        }
+    }
+
+    ~TrieNode()
+    {
+        for (int i = 0; i < 26; i++)
+        {
+            delete children[i];
+            children[i] = nullptr;
+        }
+    }
+
+    void dfs(TrieNode *node, string word)
+    {
+        if (node->isWord)
+        {
+            std::cout << "word:" << word << std::endl;
+        }
+
+        for (int i = 0; i < 26; i++)
+        {
+            if (node->children[i] != nullptr)
+            {
+                string newWord = word + char('a' + i);
+                dfs(node->children[i], newWord);
+            }
+        }
+    }
+
+    /**
+     * 打印，深度优先遍历
+     */
+    void print()
+    {
+        dfs(this, "*");
+    }
+};

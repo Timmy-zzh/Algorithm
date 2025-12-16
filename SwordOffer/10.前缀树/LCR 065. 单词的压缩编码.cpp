@@ -58,24 +58,24 @@ words[i] 仅由小写字母组成
  */
 TrieNode *buildTrie(vector<string> &words)
 {
-  TrieNode *root = new TrieNode();
-  TrieNode *node = nullptr;
-  for (auto word : words)
-  {
-    node = root;
-    // 逆序遍历单个单词
-    for (int i = word.length() - 1; i >= 0; --i)
+    TrieNode *root = new TrieNode();
+    TrieNode *node = nullptr;
+    for (auto word : words)
     {
-      int pos = word[i] - 'a';
-      if (node->children[pos] == nullptr)
-      {
-        node->children[pos] = new TrieNode();
-      }
-      node = node->children[pos];
+        node = root;
+        // 逆序遍历单个单词
+        for (int i = word.length() - 1; i >= 0; --i)
+        {
+            int pos = word[i] - 'a';
+            if (node->children[pos] == nullptr)
+            {
+                node->children[pos] = new TrieNode();
+            }
+            node = node->children[pos];
+        }
+        node->isWord = true;
     }
-    node->isWord = true;
-  }
-  return root;
+    return root;
 }
 
 /**
@@ -87,20 +87,20 @@ TrieNode *buildTrie(vector<string> &words)
  */
 void dfs(TrieNode *node, int path, int &pathSum)
 {
-  // 遍历前缀树节点值，一直到叶子结点
-  bool isLeaf = true; // 判断当前遍历到的结点是否是叶子结点
-  for (int i = 0; i < 26; i++)
-  {
-    if (node->children[i] != nullptr)
+    // 遍历前缀树节点值，一直到叶子结点
+    bool isLeaf = true; // 判断当前遍历到的结点是否是叶子结点
+    for (int i = 0; i < 26; i++)
     {
-      isLeaf = false;
-      dfs(node->children[i], path + 1, pathSum);
+        if (node->children[i] != nullptr)
+        {
+            isLeaf = false;
+            dfs(node->children[i], path + 1, pathSum);
+        }
     }
-  }
-  if (isLeaf)
-  {
-    pathSum += path;
-  }
+    if (isLeaf)
+    {
+        pathSum += path;
+    }
 }
 
 /**
@@ -113,46 +113,46 @@ void dfs(TrieNode *node, int path, int &pathSum)
  */
 int minimumLengthEncoding(vector<string> &words)
 {
-  TrieNode *root = buildTrie(words);
-  root->print();
-  int pathSum = 0;
-  dfs(root, 1, pathSum);
-  return pathSum;
+    TrieNode *root = buildTrie(words);
+    root->print();
+    int pathSum = 0;
+    dfs(root, 1, pathSum);
+    return pathSum;
 }
 
 int main()
 {
-  std::cout << "Hello, Algorithm!" << std::endl;
+    std::cout << "Hello, Algorithm!" << std::endl;
 
-  // vector<string> matrix = {"10100", "10111", "11111", "10010"};
+    // vector<string> matrix = {"10100", "10111", "11111", "10010"};
 
-  // for (auto ele : matrix)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // for (auto ele : matrix)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // auto res = maximalRectangle(matrix);
+    // auto res = maximalRectangle(matrix);
 
-  // std::cout << "res:" << res << std::endl;
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
