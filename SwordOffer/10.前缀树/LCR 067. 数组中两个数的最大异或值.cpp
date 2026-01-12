@@ -154,7 +154,7 @@ int findMaximumXOR(vector<int> &nums)
  * 2、解题：暴力解法
  * - 遍历数组中的元素，两两进行异或xor操作，并最出最大值
  */
-int findMaximumXOR(vector<int> &nums)
+int findMaximumXOR1(vector<int> &nums)
 {
   int res = 0;
   int size = nums.size();

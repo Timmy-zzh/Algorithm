@@ -10,6 +10,9 @@
 #include <queue>
 // #include "src/bean.h"
 
+#include <random>
+#include <algorithm>
+
 /**
  * 感想：
  * - 脑子得练才行，光看书，不动手写，那不行！效果打骨折。
@@ -23,149 +26,77 @@
 using namespace std;
 
 /**
-LCR 067. 数组中两个数的最大异或值
-https://leetcode.cn/problems/ms70jA/description/
+LCR 072. x 的平方根
+https://leetcode.cn/problems/jJ0w9p/description/
 
-给定一个整数数组 nums ，返回 nums[i] XOR nums[j] 的最大运算结果，其中 0 ≤ i ≤ j < n 。
+给定一个非负整数 x ，计算并返回 x 的平方根，即实现 int sqrt(int x) 函数。
+正数的平方根有两个，只输出其中的正数平方根。
+如果平方根不是整数，输出只保留整数的部分，小数部分将被舍去。
 
 示例 1：
-输入：nums = [3,10,5,25,2,8]
-输出：28
-解释：最大运算结果是 5 XOR 25 = 28.
+输入: x = 4
+输出: 2
 
 示例 2：
-输入：nums = [0]
-输出：0
-
-示例 3：
-输入：nums = [2,4]
-输出：6
-
-示例 4：
-输入：nums = [8,10,2]
-输出：10
-
-示例 5：
-输入：nums = [14,70,53,83,49,91,36,80,92,51,66,70]
-输出：127
+输入: x = 8
+输出: 2
+解释: 8 的平方根是 2.82842...，由于小数部分将被舍去，所以返回 2
 
 提示：
-1 <= nums.length <= 2 * 105
-0 <= nums[i] <= 231 - 1
-进阶：你可以在 O(n) 的时间解决这个问题吗？
+0 <= x <= 231 - 1
+注意：本题与主站 69 题相同： https://leetcode.cn/problems/sqrtx/
  */
-
-/**
- * 解法2：前缀树解法
- * - 将整数num转换成数位保存到前缀树中，数位是二进制，保存的数字不是0就是1，所以前缀树的子节点只有两个，
- * -- 每个整数int类型为32位，如果是正整数，则最左边数位为0。
- * - 先将数组中每个int整数插入到前缀树中，根据他的数位值来创建节点，从最高位到最低位
- * - 查找两个数字的最大异或值，先遍历数字，然后查找与之对应的数位是否存在，如果存在则选中这个节点并且异或值增加1
- * -- 如果没有说明这个数位位置存在相同的数字节点，异或值结果不能增加1，
- * - 问题的关键在于，查找异或值的过程中，下一个节点为异或值的目标节点，而异或值在最高位其值越高，
- * -- 所以异或值的结点从最高位开始就要选择值不同的结点，然后往下一直选择不同值的结点，如果没有不同值结点则选中相同值结点，异或值结果位数值不增加只往右移动
- */
-
-/**
- * 位数前缀树
- * - 只有两个节点，使用长度为2的数组保存节点
- */
-class TrieNode
+int mySqrt(int x)
 {
-public:
-  TrieNode *childred[2];
-
-  TrieNode()
+  int left = 1;
+  int right = x;
+  while (left <= right)
   {
-    for (int i = 0; i < 2; i++)
+    int mid = left + (right - left) / 2;
+    if (mid == x / mid)
     {
-      this->childred[i] = nullptr;
+      return mid;
     }
-  }
 
-  ~TrieNode()
-  {
-    for (int i = 0; i < 2; i++)
+    if (mid > x / mid)
     {
-      this->childred[i] = nullptr;
-    }
-  }
-};
-
-TrieNode *buildTrie(vector<int> &nums)
-{
-  TrieNode *root = new TrieNode();
-  // 遍历数组，取出int数字，从最高位取出数位，然后插入到前缀树中
-  for (auto num : nums)
-  {
-    TrieNode *node = root;
-    for (int i = 31; i >= 0; --i)
-    {
-      int bit = (num >> i) & 1; // 数位的数字
-      if (node->childred[bit] == nullptr)
+      // 前一个数字小于
+      if (mid - 1 < x / (mid - 1))
       {
-        node->childred[bit] = new TrieNode();
+        return mid - 1;
       }
-      node = node->childred[bit];
+      right = mid - 1;
     }
-  }
-  return root;
-}
-
-int getMaxXOR(vector<int> &nums, TrieNode *root)
-{
-  int res = 0;
-  // 遍历数组中的整数，根据该整数的数位，从高位到低位，查找与之对应数位的数字节点是否存在，存在或不存在都从该结点的对应结点位置开始往下遍历
-  for (const auto num : nums)
-  {
-    TrieNode *node = root;
-    int xorRes = 0;
-    for (int i = 31; i >= 0; --i)
+    else
     {
-      int bit = (num >> i) & 1;
-      // 查找与之相对的结点是否存在
-      if (node->childred[1 - bit] != nullptr)
-      {
-        xorRes = (xorRes << 1) + 1;
-        node = node->childred[1 - bit];
-      }
-      else
-      {
-        xorRes = (xorRes << 1);
-        node = node->childred[bit];
-      }
+      left = mid + 1;
     }
-    res = std::max(res, xorRes);
   }
-
-  return res;
-}
-
-int findMaximumXOR(vector<int> &nums)
-{
-  TrieNode *root = buildTrie(nums);
-  return getMaxXOR(nums, root);
+  return 0;
 }
 
 /**
  * 1、审题：
- * - 输入一个整数数组，要求对数组中的两个数字进行异或操作xor，并求出最终得到的异或值最大的数值并返回，
- * - 注意两个数字可以相同，所以异或值最小也比当前的遍历值要大
- * 2、解题：暴力解法
- * - 遍历数组中的元素，两两进行异或xor操作，并最出最大值
+ * - 输入一个非负整数x，也就是0或者正整数，要计算x的开平方根后的结果，如果结果带有小数，则只取整数部分
+ * 2、解题：
+ * - 普通循环解法：遍历从1到x/2的部分，判断当前遍历的数i的平方大于x，而前面数字i-1的平方小于等于x，则命中
+ * - 二分查找法：使用左右指针left=1，right=n，判断中间mid的平方是否登录x
+ * - 如果不等于，判断mid*mid》n，且mid-1的平方《=n，则mid-1未目标值，如果mid平方小于n，说明目标值在右侧，left=mid+1
+ * - 否则mid-1的平方也大于n，则目标值在左侧范围，right=mid-1
+ * -- 要考虑int类型值表示范围
  */
-int findMaximumXOR(vector<int> &nums)
+int mySqrt(int x)
 {
   int res = 0;
-  int size = nums.size();
-  for (int i = 0; i < size; i++)
-  { // 两层for循环
-    int num1 = nums[i];
-    for (int j = i + 1; j < size; j++)
+  for (int i = 1; i <= x; i++)
+  {
+    if (i == x / i)
     {
-      int num2 = nums[j];
-      int xorRes = num1 ^ num2;
-      res = max(res, xorRes);
+      return i;
+    }
+    else if (i > x / i)
+    {
+      return i - 1;
     }
   }
   return res;

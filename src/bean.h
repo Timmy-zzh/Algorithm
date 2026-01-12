@@ -1,5 +1,7 @@
 
 #include <iostream>
+#include <random>
+#include <algorithm>
 
 // 链表节点
 struct ListNode
@@ -172,3 +174,17 @@ public:
         dfs(this, "*");
     }
 };
+
+static int genRandomNum(int total)
+{
+    // 随机数引擎（生成器）
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    // 定义分布范围
+    std::uniform_int_distribution<> dis(0, total - 1);
+
+    // 生成随机数
+    int random_num = dis(gen);
+    return random_num;
+}
