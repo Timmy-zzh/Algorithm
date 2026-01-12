@@ -85,7 +85,7 @@ int mySqrt(int x)
  * - 否则mid-1的平方也大于n，则目标值在左侧范围，right=mid-1
  * -- 要考虑int类型值表示范围
  */
-int mySqrt(int x)
+int mySqrt1(int x)
 {
   int res = 0;
   for (int i = 1; i <= x; i++)
@@ -102,9 +102,24 @@ int mySqrt(int x)
   return res;
 }
 
+/**************************** 《C++ Primer Plus》 ******************************** */
+
 int main()
 {
-  std::cout << "Hello, Algorithm!" << std::endl;
+  std::cout << "《C++ Primer Plus》" << std::endl;
+
+  // int months[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  int months[12];
+  months[1] = 31;
+  months[2] = 28;
+  months[3] = 31;
+
+  std::cout << "months[1]:" << months[1] << std::endl;
+  std::cout << "months[2]:" << months[2] << std::endl;
+
+  std::cout << "size of months array = " << sizeof(months) << std::endl;
+  std::cout << " size of one elelment :" << sizeof(months[0]) << std::endl;
+  std::cout << " number of elements :" << sizeof(months) / sizeof(months[0]) << std::endl;
 
   // vector<string> matrix = {"10100", "10111", "11111", "10010"};
 
