@@ -56,26 +56,26 @@ using namespace std;
 
 static int getRandom(int start, int end)
 {
-  if (start >= end)
-  {
-    return start;
-  }
-  std::random_device rd;
-  std::mt19937 gen(rd()); // 随机因子吗？
+    if (start >= end)
+    {
+        return start;
+    }
+    std::random_device rd;
+    std::mt19937 gen(rd()); // 随机因子吗？
 
-  // 定义分布范围
-  std::uniform_int_distribution<> dis(start, end - 1);
+    // 定义分布范围
+    std::uniform_int_distribution<> dis(start, end - 1);
 
-  int random_num = dis(gen);
-  return random_num;
+    int random_num = dis(gen);
+    return random_num;
 }
 
 // 数组元素交换
 void mySwap(std::vector<int> &nums, int a, int b)
 {
-  int temp = nums[a];
-  nums[a] = nums[b];
-  nums[b] = temp;
+    int temp = nums[a];
+    nums[a] = nums[b];
+    nums[b] = temp;
 }
 
 /**
@@ -87,80 +87,80 @@ void mySwap(std::vector<int> &nums, int a, int b)
  */
 int getPovit(std::vector<int> &nums, int start, int end)
 {
-  // 获取一个随机数，取值范围[start,end]
-  int randomIndex = getRandom(start, end);
-  mySwap(nums, randomIndex, end);
+    // 获取一个随机数，取值范围[start,end]
+    int randomIndex = getRandom(start, end);
+    mySwap(nums, randomIndex, end);
 
-  int small = start - 1;
-  for (int i = start; i < end; i++)
-  {
-    if (nums[i] < nums[end])
+    int small = start - 1;
+    for (int i = start; i < end; i++)
     {
-      small++;
-      mySwap(nums, small, i);
+        if (nums[i] < nums[end])
+        {
+            small++;
+            mySwap(nums, small, i);
+        }
     }
-  }
 
-  small++;
-  mySwap(nums, small, end);
-  return small;
+    small++;
+    mySwap(nums, small, end);
+    return small;
 }
 
 int findKthLargest(vector<int> &nums, int k)
 {
-  int left = 0;
-  int right = nums.size() - 1;
-  int targetIndex = nums.size() - k;
-  int povit = getPovit(nums, left, right);
+    int left = 0;
+    int right = nums.size() - 1;
+    int targetIndex = nums.size() - k;
+    int povit = getPovit(nums, left, right);
 
-  while (povit != targetIndex)
-  {
-    if (povit < targetIndex)
+    while (povit != targetIndex)
     {
-      left = povit + 1;
+        if (povit < targetIndex)
+        {
+            left = povit + 1;
+        }
+        else
+        {
+            right = povit - 1;
+        }
+        povit = getPovit(nums, left, right);
     }
-    else
-    {
-      right = povit - 1;
-    }
-    povit = getPovit(nums, left, right);
-  }
-  return nums[povit];
+    return nums[povit];
 }
 
 int main()
 {
-  std::cout << "《C++ Primer Plus》" << std::endl;
+    std::cout << "《C++ Primer Plus》" << std::endl;
 
-  // vector<string> matrix = {"10100", "10111", "11111", "10010"};
+    // vector<string> matrix = {"10100", "10111", "11111", "10010"};
 
-  // for (auto ele : matrix)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // for (auto ele : matrix)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // auto res = maximalRectangle(matrix);
+    // auto res = maximalRectangle(matrix);
 
-  // std::cout << "res:" << res << std::endl;
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
