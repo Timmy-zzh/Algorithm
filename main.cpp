@@ -8,7 +8,7 @@
 #include <random>
 #include <stack>
 #include <queue>
-// #include "src/bean.h"
+#include "src/bean.h"
 
 #include <random>
 #include <algorithm>
@@ -25,112 +25,179 @@
  */
 using namespace std;
 
-void mySwap(std::vector<int> &nums, int a, int b)
+/**
+LCR 077. 排序链表
+https://leetcode.cn/problems/7WHec2/description/
+
+给定链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+
+示例 1：
+输入：head = [4,2,1,3]
+输出：[1,2,3,4]
+
+示例 2：
+输入：head = [-1,5,3,4,0]
+输出：[-1,0,3,4,5]
+
+示例 3：
+输入：head = []
+输出：[]
+
+提示：
+链表中节点的数目在范围 [0, 5 * 104] 内
+-105 <= Node.val <= 105
+进阶：你可以在 O(n log n) 时间复杂度和常数级空间复杂度下，对链表进行排序吗？
+ */
+
+/**
+ * 快慢指针，将输入的链表分割成前后两部分，并返回后半部分
+ */
+ListNode *spliteList(ListNode *head)
 {
-  int temp = nums[a];
-  nums[a] = nums[b];
-  nums[b] = temp;
-}
+  ListNode *fast = head->next;
+  ListNode *slow = head;
 
-static int genRandomNum(int start, int end)
-{
-  // 随机数引擎（生成器）
-  std::random_device rd;
-  std::mt19937 gen(rd());
-
-  // 定义分布范围
-  std::uniform_int_distribution<> dis(start, end - 1);
-
-  // 生成随机数
-  int random_num = dis(gen);
-  return random_num;
-}
-
-int getPoivt(std::vector<int> &nums, int start, int end)
-{
-  int randIndex = genRandomNum(start, end);
-  mySwap(nums, randIndex, end); // 精准值交换到数组末尾
-
-  int small = start - 1;
-
-  for (int i = start; i < end; i++)
+  while (fast != nullptr && fast->next != nullptr)
   {
-    if (nums[i] < nums[end]) // 遍历到的数组元素小于基准值
+    fast = fast->next->next;
+    slow = slow->next;
+  }
+  ListNode *second = slow->next;
+  slow->next = nullptr;
+
+  return second;
+}
+
+ListNode *realSortList(ListNode *head)
+{
+  std::cout << "realSortList:" << head->val << std::endl;
+
+  if (head == nullptr || head->next == nullptr)
+  {
+    return head;
+  }
+
+  // 拆分链表
+  ListNode *head1 = head;
+  ListNode *head2 = spliteList(head);
+
+
+  // 对两段链表不断进行排序
+  ListNode *newHead1 = realSortList(head1);
+  ListNode *newHead2 = realSortList(head2);
+
+
+  // 将两个链表合并到一起 newHead1,newHead2
+  // mergeList(head,head2);
+  ListNode *dummy = new ListNode(0); // 虚拟临时指针
+  ListNode *tempNode = dummy;
+  while (newHead1 != nullptr && newHead2 != nullptr)
+  {
+    if (newHead1->val < newHead2->val)
     {
-      small++;
-      mySwap(nums, small, i);
+      tempNode->next = newHead1;
+      newHead1 = newHead1->next;
     }
+    else
+    {
+      tempNode->next = newHead2;
+      newHead2 = newHead2->next;
+    }
+    tempNode = tempNode->next;
+  }
+  if (newHead1 != nullptr)
+  {
+    tempNode->next = newHead1;
+  }
+  if (newHead2 != nullptr)
+  {
+    tempNode->next = newHead2;
   }
 
-  small++;
-  mySwap(nums, small, end);
-  return small;
+  return dummy->next;
 }
 
 /**
- * - 先获取基准值,在 (start,end) 范围内获取一个随机数位置
- * - 然后以这个随机数位置为基准值,交换到最后位置
- * - 然后遍历数组范围,寻找到比基准值小的元素,与前面区域的位置进行交换
+ * 使用归并排序算法进行遍历排序,归并排序采用的分支思想
+ * - 将原先的链表不断拆分成两段，直到两段链表的长度为1为止
+ * - 接着将两段链表重新拼接在一起，并且按照升序排列，并返回新排序好的链表
  */
-void quickSortReal(std::vector<int> &nums, int start, int end)
+ListNode *sortList(ListNode *head)
 {
-  std::cout << "start:" << start << " ,end:" << end << std::endl;
-  if (start >= end)
-  {
-    return;
-  }
-
-  int povit = getPoivt(nums, start, end);
-  std::cout << " quickSortReal povit:" << povit << std::endl;
-  for (auto ele : nums)
-  {
-    std::cout << ele << ",";
-  }
-  std::cout << std::endl;
-
-  quickSortReal(nums, start, povit - 1);
-  quickSortReal(nums, povit + 1, end);
+  return realSortList(head);
 }
 
 /**
- * 快速排序
- * - 分治思想,通过递归函数,获取数组中一个随机元素作为基准值,将数组分为两个部分,前面部分小于基准值大小,后面部分小于基准值
- * - 然后继续对前后两个区域进行递归处理,直到区域范围为1
+ * 1、审题： 输入一个链表，要求将该链表进行升序排序处理，并最终返回排序后的链表
+ * 2、解题：暴力解法
+ * - 遍历原始的链表节点，并新建一个链表用于保存之前遍历的结点
+ * - 将遍历到的结点插入到新链表中，并且是按照升序排序的，要求找到第一个大于当前结点大小的元素
+ * 3、时间复杂度为n平方
+ * - 内层for循环，每次都要重头开始遍历寻找到合适的前继节点用来插入新节点
  */
-vector<int> quickSort(vector<int> &nums)
+ListNode *sortList1(ListNode *head)
 {
-  quickSortReal(nums, 0, nums.size() - 1);
-  return nums;
+  ListNode *dummy = new ListNode(-1);
+  ListNode *headNode = dummy;
+
+  // 遍历head链表，取出链表的结点
+  ListNode *node = head;
+  while (node != nullptr)
+  {
+    // 判断当前遍历到的结点大小于新链表的值大小
+    while (headNode->next != nullptr && headNode->next->val < node->val)
+    {
+      headNode = headNode->next;
+    }
+    // 否则就是遍历到newNode链表的末尾节点，或者找到了第一个大于node节点的值->插入一个新节点
+    ListNode *newNode = new ListNode(node->val);
+    if (headNode->next == nullptr) // 链表尾部插入
+    {
+      headNode->next = newNode;
+    }
+    else
+    {
+      newNode->next = headNode->next; // 中间插入节点
+      headNode->next = newNode;
+    }
+    // 重新将新链表设置为头结点，用于下次遍历判断大小
+    headNode = dummy;
+    // headNode->print();
+
+    {
+      ListNode *printNode = headNode;
+      while (printNode != nullptr)
+      {
+        std::cout << printNode->val << " ,";
+        printNode = printNode->next;
+      }
+      std::cout << std::endl;
+    }
+
+    node = node->next;
+  }
+
+  return dummy->next;
 }
 
 int main()
 {
-  std::cout << "《C++ Primer Plus》" << std::endl;
+  std::cout << "《剑指offer》" << std::endl;
+  ListNode node1(4);
+  ListNode node2(2);
+  ListNode node3(1);
+  ListNode node4(3);
 
-  vector<int> nums = {4, 1, 5, 3, 6, 2, 7, 8};
-  for (auto ele : nums)
-  {
-    std::cout << ele << ",";
-  }
-  std::cout << std::endl;
+  node1.next = &node2;
+  node2.next = &node3;
+  node3.next = &node4;
+  node1.print();
 
-  quickSort(nums);
-  std::cout << "quickSort(nums)----------" << std::endl;
+  ListNode *sortNode = sortList(&node1);
 
-  for (auto ele : nums)
-  {
-    std::cout << ele << ",";
-  }
-  std::cout << std::endl;
+  sortNode->print();
 
-  // for (auto ele : matrix)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
-
-  // auto res = maximalRectangle(matrix);
-
+  // auto res = sortArray(nums);
   // std::cout << "res:" << res << std::endl;
 
   // 遍历1维数组

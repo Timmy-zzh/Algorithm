@@ -2,6 +2,7 @@
 #include <iostream>
 #include <random>
 #include <algorithm>
+#include <string>
 
 // 链表节点
 struct ListNode
@@ -149,7 +150,7 @@ public:
         }
     }
 
-    void dfs(TrieNode *node, string word)
+    void dfs(TrieNode *node, std::string word)
     {
         if (node->isWord)
         {
@@ -160,7 +161,7 @@ public:
         {
             if (node->children[i] != nullptr)
             {
-                string newWord = word + char('a' + i);
+                std::string newWord = word + char('a' + i);
                 dfs(node->children[i], newWord);
             }
         }
