@@ -15,161 +15,149 @@
 
 /**
  * 感想：
- * - 脑子得练才行,光看书,不动手写,那不行！效果打/home/yingzi/zzh_work/github/Algorithm/SwordOffer/12.排序/LCR 075. 数组的相对排序.cpp骨折。
+ * - 脑子得练才行,光看书,不动手写,那不行！效果打骨折。
  * - 多写,写思路,写想法,描述出来,自然就会思考的更清楚,更快速。
  * - 一定不要留下疑问而继续,一定要要把问题彻底搞清楚。
  * - 想不明白的就画图辅助理解
  * - 技术精进：算法为长远； Qt,cpp技术为当下所需要,接着是架构设计
  * -- 每天花在技术提升上的时间至少2小时,1小时用于算法实现,1小时用于cpp和Qt,一个长久的积累,一个短期的提升。
  * - 不可复制粘贴,每一行代码都要自己实现,每一次代码实现都是一次锻炼机会
+ * - 学以致用，才会发生改变，更何况不学
  */
 using namespace std;
 
 /**
-LCR 077. 排序链表
-https://leetcode.cn/problems/7WHec2/description/
+LCR 078. 合并 K 个升序链表
+https://leetcode.cn/problems/vvXgSW/description/
 
-给定链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+给定一个链表数组，每个链表都已经按升序排列。
+请将所有链表合并到一个升序链表中，返回合并后的链表。
 
 示例 1：
-输入：head = [4,2,1,3]
-输出：[1,2,3,4]
+输入：lists = [[1,4,5],[1,3,4],[2,6]]
+输出：[1,1,2,3,4,4,5,6]
+解释：链表数组如下：
+[
+  1->4->5,
+  1->3->4,
+  2->6
+]
+将它们合并到一个有序链表中得到。
+1->1->2->3->4->4->5->6
 
 示例 2：
-输入：head = [-1,5,3,4,0]
-输出：[-1,0,3,4,5]
+输入：lists = []
+输出：[]
 
 示例 3：
-输入：head = []
+输入：lists = [[]]
 输出：[]
 
 提示：
-链表中节点的数目在范围 [0, 5 * 104] 内
--105 <= Node.val <= 105
-进阶：你可以在 O(n log n) 时间复杂度和常数级空间复杂度下，对链表进行排序吗？
+k == lists.length
+0 <= k <= 10^4
+0 <= lists[i].length <= 500
+-10^4 <= lists[i][j] <= 10^4
+lists[i] 按 升序 排列
+lists[i].length 的总和不超过 10^4
  */
 
 /**
- * 快慢指针，将输入的链表分割成前后两部分，并返回后半部分
+ * 合并两个链表：
+ * - 创建临时链表节点，然后不断将值小的结点插入到链表中
  */
-ListNode *spliteList(ListNode *head)
+ListNode *mergeList(ListNode *head1, ListNode *head2)
 {
-  ListNode *fast = head;
-  ListNode *slow = head;
-  ListNode *prev = nullptr;
+  ListNode *dummy = new ListNode();
+  ListNode *curr = dummy;
 
-  while (fast != nullptr && fast->next != nullptr)
+  while (head1 != nullptr && head2 != nullptr)
   {
-    fast = fast->next->next;
-    prev = slow;
-    slow = slow->next;
-  }
-  slow->next = nullptr;
-  return slow;
-}
-
-ListNode *realSortList(ListNode *head)
-{
-  if (head->next == nullptr)
-  {
-    return head;
-  }
-
-  // 拆分链表
-  ListNode *head2 = spliteList(head);
-
-  // 对两段链表不断进行排序
-  ListNode *newHead1 = realSortList(head);
-  ListNode *newHead2 = realSortList(head2);
-
-  // 将两个链表合并到一起 newHead1,newHead2
-  // mergeList(head,head2);
-  ListNode *dummy = new ListNode(0); // 虚拟临时指针
-  ListNode *tempNode = dummy;
-  while (newHead1 != nullptr && newHead2 != nullptr)
-  {
-    if (newHead1->next->val < newHead2->next->val)
+    if (head1->val < head2->val)
     {
-      tempNode->next = newHead1;
-      newHead1 = newHead1->next;
+      curr->next = head1;
+      head1 = head1->next;
     }
     else
     {
-      dummy->next = newHead2;
-      newHead2 = newHead2->next;
+      curr->next = head2;
+      head2 = head2->next;
     }
-    tempNode = tempNode->next;
+    curr = curr->next;
   }
-  if (newHead1 != nullptr)
-  {
-    tempNode = newHead1;
-  }
-  if (newHead2 != nullptr)
-  {
-    tempNode = newHead2;
-  }
-
+  curr->next = head1 != nullptr ? head1 : head2;
   return dummy->next;
 }
 
 /**
- * 使用归并排序算法进行遍历排序,归并排序采用的分支思想
- * - 将原先的链表不断拆分成两段，直到两段链表的长度为1为止
- * - 接着将两段链表重新拼接在一起，并且按照升序排列，并返回新排序好的链表
+ * 二分查找不断拆分，递归实现
+ * 然后合并两个链表
  */
-ListNode *sortList(ListNode *head)
+ListNode *mergeKListsReal(vector<ListNode *> &lists, int start, int end)
 {
-  return realSortList(head);
+  if (start + 1 == end)
+  {
+    return lists[start];
+  }
+
+  int mid = start + (end - start) / 2;
+  ListNode *head1 = mergeKListsReal(lists, start, mid);
+  ListNode *head2 = mergeKListsReal(lists, mid, end);
+
+  return mergeList(head1, head2);
 }
 
 /**
- * 1、审题： 输入一个链表，要求将该链表进行升序排序处理，并最终返回排序后的链表
- * 2、解题：暴力解法
- * - 遍历原始的链表节点，并新建一个链表用于保存之前遍历的结点
- * - 将遍历到的结点插入到新链表中，并且是按照升序排序的，要求找到第一个大于当前结点大小的元素
- * 3、时间复杂度为n平方
- * - 内层for循环，每次都要重头开始遍历寻找到合适的前继节点用来插入新节点
+ * 解法2：采用归并排序拆分思想
+ * - 先将归并算法思想，将链表数据中的所有链表进行不断拆分，分成两个部分，直到只剩下单独的一个链表，然后将前后两部分链表合并
  */
-ListNode *sortList(ListNode *head)
+ListNode *mergeKLists(vector<ListNode *> &lists)
 {
-  ListNode *dummy = new ListNode(-1);
-  ListNode *headNode = dummy;
-
-  // 遍历head链表，取出链表的结点
-  ListNode *node = head;
-  while (node != nullptr)
+  if (lists.empty())
   {
-    // 判断当前遍历到的结点大小于新链表的值大小
-    while (headNode->next != nullptr && headNode->next->val < node->val)
-    {
-      headNode = headNode->next;
-    }
-    // 否则就是遍历到newNode链表的末尾节点，或者找到了第一个大于node节点的值->插入一个新节点
-    ListNode *newNode = new ListNode(node->val);
-    if (headNode->next == nullptr) // 链表尾部插入
-    {
-      headNode->next = newNode;
-    }
-    else
-    {
-      newNode->next = headNode->next; // 中间插入节点
-      headNode->next = newNode;
-    }
-    // 重新将新链表设置为头结点，用于下次遍历判断大小
-    headNode = dummy;
-    // headNode->print();
+    return nullptr;
+  }
+  return mergeKListsReal(lists, 0, lists.size());
+}
 
-    {
-      ListNode *printNode = headNode;
-      while (printNode != nullptr)
-      {
-        std::cout << printNode->val << " ,";
-        printNode = printNode->next;
-      }
-      std::cout << std::endl;
-    }
+/**
+ * 1、审题：输入k个升序排序的链表，现在要将这k个链表合并成一个单独的链表
+ * 2、解题：将所有链表的头结点放到一个小顶堆数组中，然后取最小值添加到链表中，不断重复这个步骤
+ * - 节点添加到链表中，需要将后面节点继续插入到小顶堆中
+ */
+static bool camp(ListNode *m, ListNode *n)
+{
+  return m->val > n->val;
+}
 
-    node = node->next;
+ListNode *mergeKLists1(vector<ListNode *> &lists)
+{
+  priority_queue<ListNode *, std::vector<ListNode *>, decltype(&camp)> min_heap(camp);
+
+  // 1、遍历k个链表，将链表头结点插入到最小堆中
+  for (auto item : lists)
+  {
+    if (item != nullptr)
+    {
+      min_heap.push(item);
+    }
+  }
+
+  // 2、新建最终结果链表，获取最小堆的堆顶元素，取出来并插入到结果链表中
+  ListNode *dummy = new ListNode(0);
+  ListNode *curr = dummy;
+  while (!min_heap.empty())
+  {
+    auto topNode = min_heap.top();
+    min_heap.pop();
+    curr->next = topNode;
+
+    // 添加
+    if (topNode->next != nullptr)
+    {
+      min_heap.push(topNode->next);
+    }
+    curr = curr->next;
   }
 
   return dummy->next;
@@ -177,7 +165,7 @@ ListNode *sortList(ListNode *head)
 
 int main()
 {
-  std::cout << "剑指offer" << std::endl;
+  std::cout << "《剑指offer》" << std::endl;
   ListNode node1(4);
   ListNode node2(2);
   ListNode node3(1);
@@ -187,10 +175,6 @@ int main()
   node2.next = &node3;
   node3.next = &node4;
   node1.print();
-
-  ListNode *sortNode = sortList(&node1);
-
-  sortNode->print();
 
   // auto res = sortArray(nums);
   // std::cout << "res:" << res << std::endl;
