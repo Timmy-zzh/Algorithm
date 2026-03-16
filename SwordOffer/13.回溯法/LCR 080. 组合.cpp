@@ -26,38 +26,72 @@
 using namespace std;
 
 /**
-LCR 082. 组合总和 II
-https://leetcode.cn/problems/4sjJUc/description/
-
-给定一个可能有重复数字的整数数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
-candidates 中的每个数字在每个组合中只能使用一次，解集不能包含重复的组合。
+LCR 080. 组合
+https://leetcode.cn/problems/uUsW3B/description/
+给定两个整数 n 和 k，返回 1 ... n 中所有可能的 k 个数的组合。
 
 示例 1：
-输入：candidates = [10,1,2,7,6,1,5], target = 8
-输出：
+输入: n = 4, k = 2
+输出:
 [
-  [1,1,6],
-  [1,2,5],
-  [1,7],
-  [2,6]
+  [2,4],
+  [3,4],
+  [2,3],
+  [1,2],
+  [1,3],
+  [1,4],
 ]
 
 示例 2：
-输入：candidates = [2,5,2,1,2], target = 5
-输出：
-[
-  [1,2,2],
-  [5]
-]
+输入: n = 1, k = 1
+输出: [[1]]
 
 提示：
-1 <= candidates.length <= 100
-1 <= candidates[i] <= 50
-1 <= target <= 30
+1 <= n <= 20
+1 <= k <= n
  */
 
-vector<vector<int>> combinationSum2(vector<int> &candidates, int target)
+void helper(int n, int k, int index, vector<int> &item, vector<vector<int>> &res)
 {
+  if (item.size() == k)
+  {
+    res.push_back(item);
+    return;
+  }
+  if (index > n)
+  {
+    return;
+  }
+  helper(n, k, index + 1, item, res);
+
+  item.push_back(index);
+  helper(n, k, index + 1, item, res);
+  item.pop_back();
+}
+
+/**
+ * 1、审题：输入两个数字n和k，现在要求在[1,n]的范围内，选择k个数字组成子集并返回
+ * 2、解题：
+ * - 采用回溯算法，面对遍历到的数字，有两种选择添加到当前子集中，或不添加
+ * - 添加的话遍历完成后需要删除，
+ * - 直到当前子集的个数等于k，即终止递归处理
+ */
+vector<vector<int>> combine(int n, int k)
+{
+  vector<vector<int>> res;
+  vector<int> item;
+  if (n == k)
+  {
+    for (int i = 1; i <= n; i++)
+    {
+      item.push_back(i);
+    }
+    res.push_back(item);
+    return res;
+  }
+
+  helper(n, k, 1, item, res);
+  return res;
 }
 
 int main()
