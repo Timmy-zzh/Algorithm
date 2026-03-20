@@ -56,80 +56,81 @@ https://leetcode.cn/problems/7p8L0Z/description/
  */
 void swapEle(vector<int> &nums, int i, int j) // 数组元素交换
 {
-  if (i != j)
-  {
-    int temp = nums[i];
-    nums[i] = nums[j];
-    nums[j] = temp;
-  }
+    if (i != j)
+    {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
 }
+
 void helper(vector<int> &nums, int index, vector<vector<int>> &res)
 {
-  if (index == nums.size())
-  {
-    res.push_back(nums);
-    return;
-  }
-
-  vector<int> set;
-
-  for (int i = index; i < nums.size(); i++)
-  {
-    if (std::find(set.begin(), set.end(), nums[i]) == set.end()) // 当前遍历的元素在set集合中不存在，则添加到队列中
+    if (index == nums.size())
     {
-      set.push_back(nums[i]);
-
-      swapEle(nums, i, index);
-
-      helper(nums, index + 1, res);
-
-      swapEle(nums, i, index);
+        res.push_back(nums);
+        return;
     }
-  }
+
+    vector<int> set;
+
+    for (int i = index; i < nums.size(); i++)
+    {
+        if (std::find(set.begin(), set.end(), nums[i]) == set.end()) // 当前遍历的元素在set集合中不存在，则添加到队列中
+        {
+            set.push_back(nums[i]);
+
+            swapEle(nums, i, index);
+
+            helper(nums, index + 1, res);
+
+            swapEle(nums, i, index);
+        }
+    }
 }
 
 vector<vector<int>> permuteUnique(vector<int> &nums)
 {
-  vector<vector<int>> res;
+    vector<vector<int>> res;
 
-  helper(nums, 0, res);
+    helper(nums, 0, res);
 
-  return res;
+    return res;
 }
 
 int main()
 {
-  std::cout << "《剑指offer》" << std::endl;
-  ListNode node1(4);
-  ListNode node2(2);
-  ListNode node3(1);
-  ListNode node4(3);
+    std::cout << "《剑指offer》" << std::endl;
+    ListNode node1(4);
+    ListNode node2(2);
+    ListNode node3(1);
+    ListNode node4(3);
 
-  node1.next = &node2;
-  node2.next = &node3;
-  node3.next = &node4;
-  node1.print();
+    node1.next = &node2;
+    node2.next = &node3;
+    node3.next = &node4;
+    node1.print();
 
-  // auto res = sortArray(nums);
-  // std::cout << "res:" << res << std::endl;
+    // auto res = sortArray(nums);
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
