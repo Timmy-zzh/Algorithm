@@ -53,62 +53,62 @@ https://leetcode.cn/problems/IDBivT/description/
  */
 void helper(int left, int right, string item, vector<string> &res)
 {
-  if (left == 0 && right == 0)
-  {
-    res.push_back(item);
-    return;
-  }
+    if (left == 0 && right == 0)
+    {
+        res.push_back(item);
+        return;
+    }
 
-  if (left > 0) // 插入左括号
-  {
-    helper(left - 1, right, item + "(", res);
-  }
-  if (left < right) // 当前已存在的左括号多，可以插入右括号
-  {
-    helper(left, right - 1, item + ")", res);
-  }
+    if (left > 0) // 插入左括号
+    {
+        helper(left - 1, right, item + "(", res);
+    }
+    if (left < right) // 当前已存在的左括号多，可以插入右括号
+    {
+        helper(left, right - 1, item + ")", res);
+    }
 }
 
 vector<string> generateParenthesis(int n)
 {
-  vector<string> res;
-  helper(n, n, "", res);
-  return res;
+    vector<string> res;
+    helper(n, n, "", res);
+    return res;
 }
 
 int main()
 {
-  std::cout << "《剑指offer》" << std::endl;
-  ListNode node1(4);
-  ListNode node2(2);
-  ListNode node3(1);
-  ListNode node4(3);
+    std::cout << "《剑指offer》" << std::endl;
+    ListNode node1(4);
+    ListNode node2(2);
+    ListNode node3(1);
+    ListNode node4(3);
 
-  node1.next = &node2;
-  node2.next = &node3;
-  node3.next = &node4;
-  node1.print();
+    node1.next = &node2;
+    node2.next = &node3;
+    node3.next = &node4;
+    node1.print();
 
-  // auto res = sortArray(nums);
-  // std::cout << "res:" << res << std::endl;
+    // auto res = sortArray(nums);
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
