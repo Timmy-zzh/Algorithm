@@ -68,111 +68,111 @@ s 仅由数字组成
 
 bool checkNumStr(string &numStr)
 {
-  if (numStr == "")
-  {
-    return false;
-  }
-  if (numStr == "0")
-  {
-    return true;
-  }
-  if (numStr[0] == '0')
-  {
-    return false;
-  }
-  if (numStr.length() > 3)
-  {
-    return false;
-  }
+    if (numStr == "")
+    {
+        return false;
+    }
+    if (numStr == "0")
+    {
+        return true;
+    }
+    if (numStr[0] == '0')
+    {
+        return false;
+    }
+    if (numStr.length() > 3)
+    {
+        return false;
+    }
 
-  int num = std::stoi(numStr);
-  if (num > 255)
-  {
-    return false;
-  }
-  return true;
+    int num = std::stoi(numStr);
+    if (num > 255)
+    {
+        return false;
+    }
+    return true;
 }
 
 void helper(string &s, int dot, int start, vector<string> &item, vector<string> &res)
 {
-  std::cout << "111 helper dot:" << dot << " start:" << start << std::endl;
-  if (dot == 0 && start == s.length())
-  {
-    // 将item中的字符串拼接成字符串，保存到res中
-    string itemStr = "";
-    for (int i = 0; i < item.size(); i++)
+    std::cout << "111 helper dot:" << dot << " start:" << start << std::endl;
+    if (dot == 0 && start == s.length())
     {
-      itemStr += item[i];
-      if (i != item.size() - 1)
-      {
-        itemStr += ".";
-      }
+        // 将item中的字符串拼接成字符串，保存到res中
+        string itemStr = "";
+        for (int i = 0; i < item.size(); i++)
+        {
+            itemStr += item[i];
+            if (i != item.size() - 1)
+            {
+                itemStr += ".";
+            }
+        }
+        res.push_back(itemStr);
+        return;
     }
-    res.push_back(itemStr);
-    return;
-  }
 
-  if (dot < 0)
-  {
-    return;
-  }
-
-  for (int i = start; (i < s.length() && i < start + 3); i++) // 单个数字控制在三位数
-  {
-    string numStr = s.substr(start, i - start + 1);
-    std::cout << "222 for numStr:" << numStr << " i:" << i << std::endl;
-    // 判断当前截取的数字是否符合要求
-    if (checkNumStr(numStr))
+    if (dot < 0)
     {
-      std::cout << "333 for numStr:" << numStr << std::endl;
-      item.push_back(numStr);
-      helper(s, dot - 1, i + 1, item, res);
-      item.pop_back();
+        return;
     }
-  }
+
+    for (int i = start; (i < s.length() && i < start + 3); i++) // 单个数字控制在三位数
+    {
+        string numStr = s.substr(start, i - start + 1);
+        std::cout << "222 for numStr:" << numStr << " i:" << i << std::endl;
+        // 判断当前截取的数字是否符合要求
+        if (checkNumStr(numStr))
+        {
+            std::cout << "333 for numStr:" << numStr << std::endl;
+            item.push_back(numStr);
+            helper(s, dot - 1, i + 1, item, res);
+            item.pop_back();
+        }
+    }
 }
 
 vector<string> restoreIpAddresses(string s)
 {
-  vector<string> res;
-  vector<string> item;
-  helper(s, 4, 0, item, res);
-  return res;
+    vector<string> res;
+    vector<string> item;
+    helper(s, 4, 0, item, res);
+    return res;
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
-  ListNode node1(4);
-  ListNode node2(2);
-  ListNode node3(1);
-  ListNode node4(3);
+    std::cout << "《剑指》" << std::endl;
+    ListNode node1(4);
+    ListNode node2(2);
+    ListNode node3(1);
+    ListNode node4(3);
 
-  node1.next = &node2;
-  node2.next = &node3;
-  node3.next = &node4;
-  node1.print();
+    node1.next = &node2;
+    node2.next = &node3;
+    node3.next = &node4;
+    node1.print();
 
-  // auto res = sortArray(nums);
-  // std::cout << "res:" << res << std::endl;
+    // auto res = sortArray(nums);
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
