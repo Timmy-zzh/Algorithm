@@ -66,82 +66,82 @@ https://leetcode.cn/problems/PzWKhm/description/
 
 int helper(vector<int> &nums, int start, int end)
 {
-  vector<int> dp(end + 1, 0);
+    vector<int> dp(end + 1, 0);
 
-  // 先将前面的两个数字填充完整
-  dp[start] = nums[start];
-  dp[start + 1] = max(nums[start], nums[start + 1]);
-  for (int i = start + 2; i <= end; i++)
-  {
-    dp[i] = max(dp[i - 1], dp[i - 2] + nums[i]);
-  }
+    // 先将前面的两个数字填充完整
+    dp[start] = nums[start];
+    dp[start + 1] = max(nums[start], nums[start + 1]);
+    for (int i = start + 2; i <= end; i++)
+    {
+        dp[i] = max(dp[i - 1], dp[i - 2] + nums[i]);
+    }
 
-  // 遍历1维数组
-  std::cout << "start:" << start << " ,end:" << end << std::endl;
-  for (auto ele : dp)
-  {
-    std::cout << ele << ",";
-  }
-  std::cout << std::endl;
+    // 遍历1维数组
+    std::cout << "start:" << start << " ,end:" << end << std::endl;
+    for (auto ele : dp)
+    {
+        std::cout << ele << ",";
+    }
+    std::cout << std::endl;
 
-  return dp[end];
+    return dp[end];
 }
 
 int rob(vector<int> &nums)
 {
-  if (nums.size() == 0)
-  {
-    return 0;
-  }
-  if (nums.size() == 1)
-  {
-    return nums[0];
-  }
+    if (nums.size() == 0)
+    {
+        return 0;
+    }
+    if (nums.size() == 1)
+    {
+        return nums[0];
+    }
 
-  if (nums.size() == 2)
-  {
-    return max(nums[0], nums[1]);
-  }
+    if (nums.size() == 2)
+    {
+        return max(nums[0], nums[1]);
+    }
 
-  int n = nums.size();
-  int res1 = helper(nums, 0, n - 2);
-  int res2 = helper(nums, 1, n - 1);
-  return max(res1, res2);
+    int n = nums.size();
+    int res1 = helper(nums, 0, n - 2);
+    int res2 = helper(nums, 1, n - 1);
+    return max(res1, res2);
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
-  ListNode node1(4);
-  ListNode node2(2);
-  ListNode node3(1);
-  ListNode node4(3);
+    std::cout << "《剑指》" << std::endl;
+    ListNode node1(4);
+    ListNode node2(2);
+    ListNode node3(1);
+    ListNode node4(3);
 
-  node1.next = &node2;
-  node2.next = &node3;
-  node3.next = &node4;
-  node1.print();
+    node1.next = &node2;
+    node2.next = &node3;
+    node3.next = &node4;
+    node1.print();
 
-  // auto res = sortArray(nums);
-  // std::cout << "res:" << res << std::endl;
+    // auto res = sortArray(nums);
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
