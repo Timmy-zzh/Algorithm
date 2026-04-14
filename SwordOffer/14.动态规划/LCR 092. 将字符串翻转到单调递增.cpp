@@ -66,35 +66,35 @@ s 中只包含字符 '0' 和 '1'
  */
 int minFlipsMonoIncr(string s)
 {
-  int n = s.length();
-  vector<vector<int>> dp(2, vector<int>(n));
+    int n = s.length();
+    vector<vector<int>> dp(2, vector<int>(n));
 
-  if (s[0] == '0')
-  {
-    dp[0][0] = 0;
-    dp[1][0] = 1;
-  }
-  else
-  {
-    dp[0][0] = 1;
-    dp[1][0] = 0;
-  }
-
-  for (int i = 1; i < n; i++)
-  {
-    if (s[i] == '0')
+    if (s[0] == '0')
     {
-      dp[0][i] = dp[0][i - 1];
-      dp[1][i] = min(dp[0][i - 1], dp[1][i - 1]) + 1;
+        dp[0][0] = 0;
+        dp[1][0] = 1;
     }
     else
     {
-      dp[0][i] = dp[0][i - 1] + 1;
-      dp[1][i] = min(dp[0][i - 1], dp[1][i - 1]);
+        dp[0][0] = 1;
+        dp[1][0] = 0;
     }
-  }
 
-  return min(dp[0][n - 1], dp[1][n - 1]);
+    for (int i = 1; i < n; i++)
+    {
+        if (s[i] == '0')
+        {
+            dp[0][i] = dp[0][i - 1];
+            dp[1][i] = min(dp[0][i - 1], dp[1][i - 1]) + 1;
+        }
+        else
+        {
+            dp[0][i] = dp[0][i - 1] + 1;
+            dp[1][i] = min(dp[0][i - 1], dp[1][i - 1]);
+        }
+    }
+
+    return min(dp[0][n - 1], dp[1][n - 1]);
 }
 
 /**
@@ -115,99 +115,99 @@ int minRes = INT32_MAX;
  */
 bool isOk(string &s)
 {
-  for (int i = 1; i < s.length(); i++)
-  {
-    if (s[i] == '0')
+    for (int i = 1; i < s.length(); i++)
     {
-      if (s[i - 1] != '0')
-      {
-        return false;
-      }
+        if (s[i] == '0')
+        {
+            if (s[i - 1] != '0')
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (i == s.length() - 1) // 最后一个字符是1
+            {
+                return true;
+            }
+            if (s[i + 1] != '1')
+            {
+                return false;
+            }
+        }
     }
-    else
-    {
-      if (i == s.length() - 1) // 最后一个字符是1
-      {
-        return true;
-      }
-      if (s[i + 1] != '1')
-      {
-        return false;
-      }
-    }
-  }
-  return true;
+    return true;
 }
 
 void helper1(string &s, int i, int count)
 {
-  if (i == s.length())
-  {
-    if (isOk(s))
+    if (i == s.length())
     {
-      minRes = min(minRes, count);
+        if (isOk(s))
+        {
+            minRes = min(minRes, count);
+        }
+        return;
     }
-    return;
-  }
-  // 当前字符不翻转
-  helper1(s, i + 1, count);
+    // 当前字符不翻转
+    helper1(s, i + 1, count);
 
-  // 翻转
-  if (s[i] == '0')
-  {
-    // 翻转成1
-    s[i] = '1';
-    helper1(s, i + 1, count + 1);
-    s[i] = '0';
-  }
-  else
-  {
-    // 翻转成1
-    s[i] = '0';
-    helper1(s, i + 1, count + 1);
-    s[i] = '1';
-  }
+    // 翻转
+    if (s[i] == '0')
+    {
+        // 翻转成1
+        s[i] = '1';
+        helper1(s, i + 1, count + 1);
+        s[i] = '0';
+    }
+    else
+    {
+        // 翻转成1
+        s[i] = '0';
+        helper1(s, i + 1, count + 1);
+        s[i] = '1';
+    }
 }
 
 int minFlipsMonoIncr1(string s)
 {
-  helper1(s, 0, 0);
-  return minRes;
+    helper1(s, 0, 0);
+    return minRes;
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
-  ListNode node1(4);
-  ListNode node2(2);
-  ListNode node3(1);
-  ListNode node4(3);
+    std::cout << "《剑指》" << std::endl;
+    ListNode node1(4);
+    ListNode node2(2);
+    ListNode node3(1);
+    ListNode node4(3);
 
-  node1.next = &node2;
-  node2.next = &node3;
-  node3.next = &node4;
-  node1.print();
+    node1.next = &node2;
+    node2.next = &node3;
+    node3.next = &node4;
+    node1.print();
 
-  // auto res = sortArray(nums);
-  // std::cout << "res:" << res << std::endl;
+    // auto res = sortArray(nums);
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
