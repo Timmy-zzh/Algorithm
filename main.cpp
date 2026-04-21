@@ -9,196 +9,187 @@
 #include <stack>
 #include <queue>
 #include "src/bean.h"
-
 #include <random>
 #include <algorithm>
 
 /**
  * 感想：
- * - 脑子得练才行,光看书,不动手写,那不行！效果打/home/yingzi/zzh_work/github/Algorithm/SwordOffer/12.排序/LCR 075. 数组的相对排序.cpp骨折。
+ * - 脑子得练才行,光看书,不动手写,那不行！效果打骨折。
  * - 多写,写思路,写想法,描述出来,自然就会思考的更清楚,更快速。
  * - 一定不要留下疑问而继续,一定要要把问题彻底搞清楚。
  * - 想不明白的就画图辅助理解
  * - 技术精进：算法为长远； Qt,cpp技术为当下所需要,接着是架构设计
  * -- 每天花在技术提升上的时间至少2小时,1小时用于算法实现,1小时用于cpp和Qt,一个长久的积累,一个短期的提升。
  * - 不可复制粘贴,每一行代码都要自己实现,每一次代码实现都是一次锻炼机会
+ * - 学以致用，才会发生改变，更何况不学
  */
 using namespace std;
 
 /**
-LCR 077. 排序链表
-https://leetcode.cn/problems/7WHec2/description/
+LCR 094. 分割回文串 II
+https://leetcode.cn/problems/omKAoA/description/
 
-给定链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+给定一个字符串 s，请将 s 分割成一些子串，使每个子串都是回文串。
+返回符合要求的 最少分割次数 。
 
 示例 1：
-输入：head = [4,2,1,3]
-输出：[1,2,3,4]
+输入：s = "aab"
+输出：1
+解释：只需一次分割就可将 s 分割成 ["aa","b"] 这样两个回文子串。
 
 示例 2：
-输入：head = [-1,5,3,4,0]
-输出：[-1,0,3,4,5]
+输入：s = "a"
+输出：0
 
 示例 3：
-输入：head = []
-输出：[]
+输入：s = "ab"
+输出：1
 
 提示：
-链表中节点的数目在范围 [0, 5 * 104] 内
--105 <= Node.val <= 105
-进阶：你可以在 O(n log n) 时间复杂度和常数级空间复杂度下，对链表进行排序吗？
+1 <= s.length <= 2000
+s 仅由小写英文字母组成
  */
 
 /**
- * 快慢指针，将输入的链表分割成前后两部分，并返回后半部分
+ * 动态规划解法：
+ * - 求状态转移方程式：
  */
-ListNode *spliteList(ListNode *head)
+int minCut(string s)
 {
-  ListNode *fast = head->next;
-  ListNode *slow = head;
-
-  while (fast != nullptr && fast->next != nullptr)
+  if (isPalindrome(s))
   {
-    fast = fast->next->next;
-    slow = slow->next;
+    return 0;
   }
-  ListNode *second = slow->next;
-  slow->next = nullptr;
-
-  return second;
-}
-
-ListNode *realSortList(ListNode *head)
-{
-  std::cout << "realSortList:" << head->val << std::endl;
-
-  if (head == nullptr || head->next == nullptr)
-  {
-    return head;
-  }
-
-  // 拆分链表
-  ListNode *head1 = head;
-  ListNode *head2 = spliteList(head);
-
-
-  // 对两段链表不断进行排序
-  ListNode *newHead1 = realSortList(head1);
-  ListNode *newHead2 = realSortList(head2);
-
-
-  // 将两个链表合并到一起 newHead1,newHead2
-  // mergeList(head,head2);
-  ListNode *dummy = new ListNode(0); // 虚拟临时指针
-  ListNode *tempNode = dummy;
-  while (newHead1 != nullptr && newHead2 != nullptr)
-  {
-    if (newHead1->val < newHead2->val)
-    {
-      tempNode->next = newHead1;
-      newHead1 = newHead1->next;
-    }
-    else
-    {
-      tempNode->next = newHead2;
-      newHead2 = newHead2->next;
-    }
-    tempNode = tempNode->next;
-  }
-  if (newHead1 != nullptr)
-  {
-    tempNode->next = newHead1;
-  }
-  if (newHead2 != nullptr)
-  {
-    tempNode->next = newHead2;
-  }
-
-  return dummy->next;
+  vector<string> item;
+  helper(s, item, 0, 1);
+  return minRes;
 }
 
 /**
- * 使用归并排序算法进行遍历排序,归并排序采用的分支思想
- * - 将原先的链表不断拆分成两段，直到两段链表的长度为1为止
- * - 接着将两段链表重新拼接在一起，并且按照升序排列，并返回新排序好的链表
+ * 1、审题：
+ * - 输入一个字符串，对字符串中的字符进行分割，要求分割后的子字符串都是回文串，求最少分割的次数并返回
+ * 2、解题：
+ * 回溯法
+ * - 每个字符都有两种选择，分割或者不分割，将所有分割的情况放到数组中，并最终判断是否所有的子字符串是否都是回文串，是的话求出最小的分割次数
+ * 3、总结：使用回溯法记得每次往item中添加元素后，使用万要删除该元素
+ * - 数据裁剪
  */
-ListNode *sortList(ListNode *head)
+int minRes = INT8_MAX;
+
+/**
+ * 判断字符串是否是回文串
+ * - 双指针解法，从头尾两个方向的字符不断判断
+ * - 遇到相同的，则从两头开始网内收缩，否则就不是回文串
+ */
+bool isPalindrome(string &s)
 {
-  return realSortList(head);
+  int start = 0;
+  int end = s.length() - 1;
+  while (start < end)
+  {
+    if (s[start] != s[end])
+    {
+      return false;
+    }
+    start++;
+    end--;
+  }
+  return true;
+}
+
+bool isAllPalindrome(vector<string> &item)
+{
+  std::cout << " isAllPalindrome  --------- " << std::endl;
+  // 遍历1维数组
+  for (auto ele : item)
+  {
+    std::cout << ele << ",";
+  }
+  std::cout << std::endl;
+
+  for (int i = 0; i < item.size(); i++)
+  {
+    if (!isPalindrome(item[i]))
+    {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**
- * 1、审题： 输入一个链表，要求将该链表进行升序排序处理，并最终返回排序后的链表
- * 2、解题：暴力解法
- * - 遍历原始的链表节点，并新建一个链表用于保存之前遍历的结点
- * - 将遍历到的结点插入到新链表中，并且是按照升序排序的，要求找到第一个大于当前结点大小的元素
- * 3、时间复杂度为n平方
- * - 内层for循环，每次都要重头开始遍历寻找到合适的前继节点用来插入新节点
+ * @param start ,上一次切割字符的位置
+ * @param end 当前遍历到的位置
  */
-ListNode *sortList1(ListNode *head)
+void helper(string &s, vector<string> &item, int start, int end)
 {
-  ListNode *dummy = new ListNode(-1);
-  ListNode *headNode = dummy;
 
-  // 遍历head链表，取出链表的结点
-  ListNode *node = head;
-  while (node != nullptr)
+  std::cout << " --- start:" << start << " ,end:" << end << std::endl;
+  // 遍历1维数组
+  for (auto ele : item)
   {
-    // 判断当前遍历到的结点大小于新链表的值大小
-    while (headNode->next != nullptr && headNode->next->val < node->val)
-    {
-      headNode = headNode->next;
-    }
-    // 否则就是遍历到newNode链表的末尾节点，或者找到了第一个大于node节点的值->插入一个新节点
-    ListNode *newNode = new ListNode(node->val);
-    if (headNode->next == nullptr) // 链表尾部插入
-    {
-      headNode->next = newNode;
-    }
-    else
-    {
-      newNode->next = headNode->next; // 中间插入节点
-      headNode->next = newNode;
-    }
-    // 重新将新链表设置为头结点，用于下次遍历判断大小
-    headNode = dummy;
-    // headNode->print();
+    std::cout << ele << ",";
+  }
+  std::cout << std::endl;
 
+  if (start >= s.length())
+  {
+    return;
+  }
+
+  if (end == s.length())
+  {
+    // 结束，将最后一个字符存入数组中
+    if (item.size() == 0) // 一刀不切的
     {
-      ListNode *printNode = headNode;
-      while (printNode != nullptr)
+      return;
+    }
+    else if (start != end)
+    {
+      item.push_back(s.substr(start, end - start));
+      if (isAllPalindrome(item))
       {
-        std::cout << printNode->val << " ,";
-        printNode = printNode->next;
+        std::cout << " === isAllPalindrome true" << std::endl;
+        minRes = min(minRes, static_cast<int>(item.size() - 1));
       }
-      std::cout << std::endl;
+      item.pop_back();
     }
-
-    node = node->next;
+    return;
   }
 
-  return dummy->next;
+  // 选择不分割
+  helper(s, item, start, end + 1);
+
+  // 选择分割
+  std::cout << " ------ start:" << start << " ,end:" << end << std::endl;
+  string itemStr = s.substr(start, end - start);
+  std::cout << " itemStr:" << itemStr << std::endl;
+  if (isPalindrome(itemStr))
+  {
+    item.push_back(itemStr);
+    helper(s, item, end, end + 1);
+    item.pop_back();
+  }
+}
+
+int minCut1(string s)
+{
+  if (isPalindrome(s))
+  {
+    return 0;
+  }
+  vector<string> item;
+  helper(s, item, 0, 1);
+  return minRes;
 }
 
 int main()
 {
-  std::cout << "《剑指offer》" << std::endl;
-  ListNode node1(4);
-  ListNode node2(2);
-  ListNode node3(1);
-  ListNode node4(3);
+  std::cout << "《剑指》" << std::endl;
 
-  node1.next = &node2;
-  node2.next = &node3;
-  node3.next = &node4;
-  node1.print();
-
-  ListNode *sortNode = sortList(&node1);
-
-  sortNode->print();
-
-  // auto res = sortArray(nums);
-  // std::cout << "res:" << res << std::endl;
+  // auto res = minCut("cdd");
+  auto res = minCut("leet");
+  std::cout << "res:" << res << std::endl;
 
   // 遍历1维数组
   // for (auto ele : res)
