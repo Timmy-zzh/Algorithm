@@ -53,16 +53,54 @@ s 仅由小写英文字母组成
 /**
  * 动态规划解法：
  * - 求状态转移方程式：
+ * - 先使用二维数组isPal[i][j] 表示从字符串位置i到j的位置的[i,j]子字符串，是否是回文串标记bool
+ * -- 这个二维数组的值，可以通过两层for循环求解得到，
+ * - 再使用f(i)表示子字符串S[0,i]位置所需要分割的次数，如果S[0,i]的子字符串是回文串，则不需要进行分割，f(i)的结果为0；
+ * - 如果S[0,i]这个子字符串不是回文串，则需要分割，分割的位置假设为j，存在关系为 0 < j < i，且要求分割后的子字符串S[j,i]是回文串，
+ * -- 则f(i)的值等于 f(j)的值加1，
+ * - 而j的位置可能存在多个，我们要取最小f(j)的值
  */
 int minCut(string s)
 {
-  if (isPalindrome(s))
+  int count = s.length();
+  vector<vector<bool>> isPal(count, vector<bool>(count, false));
+  for (int i = 0; i < count; i++)
   {
-    return 0;
+    for (int j = 0; j <= i; j++)
+    {
+      char chI = s[i];
+      char chJ = s[j];
+      // 求子字符串S[j,i]是否是回文串
+      if (chI == chJ && (i <= j + 1 || isPal[j + 1][i - 1]))
+      {
+        // 中间位置的子字符串为回文串，再延伸到头尾的字符也相等，则该子字符串也是回文串，
+        isPal[j][i] = true;
+      }
+    }
   }
-  vector<string> item;
-  helper(s, item, 0, 1);
-  return minRes;
+
+  // 使用dp[]数组，表示从子字符串S[0,i]的分割次数
+  vector<int> dp(count, 0);
+  for (int i = 0; i < count; i++)
+  {
+    if (isPal[0][i])
+    {
+      dp[i] = 0;
+    }
+    else
+    {
+      // 要求分割后的子字符串S[j,i]是回文串，取最小f(j)的值
+      dp[i] = i;
+      for (int j = 1; j <= i; j++)
+      {
+        if (isPal[j][i])
+        {
+          dp[i] = min(dp[i], dp[j - 1] + 1);
+        }
+      }
+    }
+  }
+  return dp[count - 1];
 }
 
 /**
@@ -187,8 +225,9 @@ int main()
 {
   std::cout << "《剑指》" << std::endl;
 
-  // auto res = minCut("cdd");
-  auto res = minCut("leet");
+  // auto res = minCut("cdd"); aab
+  // auto res = minCut("leet");
+  auto res = minCut("aab");
   std::cout << "res:" << res << std::endl;
 
   // 遍历1维数组
