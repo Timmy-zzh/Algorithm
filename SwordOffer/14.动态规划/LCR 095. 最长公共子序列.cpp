@@ -67,53 +67,53 @@ text1 和 text2 仅由小写英文字符组成。
  */
 int longestCommonSubsequence(string text1, string text2)
 {
-  int len1 = text1.length();
-  int len2 = text2.length();
+    int len1 = text1.length();
+    int len2 = text2.length();
 
-  vector<vector<int>> dp(len1 + 1, vector<int>(len2 + 1, 0));
-  for (size_t i = 0; i < len1; i++)
-  {
-    for (size_t j = 0; j < len2; j++)
+    vector<vector<int>> dp(len1 + 1, vector<int>(len2 + 1, 0));
+    for (size_t i = 0; i < len1; i++)
     {
-      if (text1[i] == text2[j])
-      {
-        dp[i + 1][j + 1] = dp[i][j] + 1;
-      }
-      else
-      {
-        dp[i + 1][j + 1] = max(dp[i][j + 1], dp[i + 1][j]);
-      }
+        for (size_t j = 0; j < len2; j++)
+        {
+            if (text1[i] == text2[j])
+            {
+                dp[i + 1][j + 1] = dp[i][j] + 1;
+            }
+            else
+            {
+                dp[i + 1][j + 1] = max(dp[i][j + 1], dp[i + 1][j]);
+            }
+        }
     }
-  }
-  return dp[len1][len2];
+    return dp[len1][len2];
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
+    std::cout << "《剑指》" << std::endl;
 
-  // auto res = minCut("cdd"); aab
-  // auto res = minCut("leet");
-  // auto res = minCut("aab");
-  // std::cout << "res:" << res << std::endl;
+    // auto res = minCut("cdd"); aab
+    // auto res = minCut("leet");
+    // auto res = minCut("aab");
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }

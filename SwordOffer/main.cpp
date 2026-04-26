@@ -26,120 +26,76 @@
 using namespace std;
 
 /**
-LCR 094. 分割回文串 II
-https://leetcode.cn/problems/omKAoA/description/
+LCR 095. 最长公共子序列
+https://leetcode.cn/problems/qJnOS7/description/
 
-给定一个字符串 s，请将 s 分割成一些子串，使每个子串都是回文串。
-返回符合要求的 最少分割次数 。
+给定两个字符串 text1 和 text2，返回这两个字符串的最长 公共子序列 的长度。如果不存在 公共子序列 ，返回 0 。
+一个字符串的 子序列 是指这样一个新的字符串：它是由原字符串在不改变字符的相对顺序的情况下删除某些字符（也可以不删除任何字符）后组成的新字符串。
+例如，"ace" 是 "abcde" 的子序列，但 "aec" 不是 "abcde" 的子序列。
+两个字符串的 公共子序列 是这两个字符串所共同拥有的子序列。
 
 示例 1：
-输入：s = "aab"
-输出：1
-解释：只需一次分割就可将 s 分割成 ["aa","b"] 这样两个回文子串。
+输入：text1 = "abcde", text2 = "ace"
+输出：3
+解释：最长公共子序列是 "ace" ，它的长度为 3 。
 
 示例 2：
-输入：s = "a"
-输出：0
+输入：text1 = "abc", text2 = "abc"
+输出：3
+解释：最长公共子序列是 "abc" ，它的长度为 3 。
 
 示例 3：
-输入：s = "ab"
-输出：1
+输入：text1 = "abc", text2 = "def"
+输出：0
+解释：两个字符串没有公共子序列，返回 0 。
 
 提示：
-1 <= s.length <= 2000
-s 仅由小写英文字母组成
+1 <= text1.length, text2.length <= 1000
+text1 和 text2 仅由小写英文字符组成。
  */
 
 /**
  * 1、审题：
- * - 输入一个字符串，对字符串中的字符进行分割，要求分割后的子字符串都是回文串，求最少分割的次数并返回
+ * - 输入两个字符串，要求两个字符串的最长公共子序列，并返回他的长度
  * 2、解题：
- * 回溯法
- * - 每个字符都有两种选择，分割或者不分割，将所有分割的情况放到数组中，并最终判断是否所有的子字符串是否都是回文串，是的话求出最小的分割次数
- *
+ * - 问题1：两个字符串如何求他的最长公共子序列呢？
+ * 动态规划解法：
+ * - 使用二维数据表示两个字符串的最长公共子序列的长度，f(i,j) 表示字符串1-S1[0,i]，和字符串2-S2[0,j]的最长公共子序列的长度
+ * - 在遍历过程中如果s[i]==s[j],则 f(i,j)=f(i-1,j-1)+1; 这是字符相等的情况
+ * - 如果字符不相等，则f(i,j)=max(f(i-1,j), f(i,j-1));
+ * - 默认dp[i][j]最边上的值全为0，当f(0,0)时f(-1,-1)超过限制了，所以数据改为往前移动一位从f(1,1)开始
  */
-int minRes = INT8_MAX;
-
-/**
- * 判断字符串是否是回文串
- * - 双指针解法，从头尾两个方向的字符不断判断
- * - 遇到相同的，则从两头开始网内收缩，否则就不是回文串
- */
-bool isPalindrome(string &s)
+int longestCommonSubsequence(string text1, string text2)
 {
-  int start = 0;
-  int end = s.length() - 1;
-  while (start < end)
-  {
-    if (s[start] != s[end])
-    {
-      return false;
-    }
-    start++;
-    end--;
-  }
-  return true;
-}
+  int len1 = text1.length();
+  int len2 = text2.length();
 
-bool isAllPalindrome(vector<string> &item)
-{
-  for (int i = 0; i < item.size(); i++)
+  vector<vector<int>> dp(len1 + 1, vector<int>(len2 + 1, 0));
+  for (size_t i = 0; i < len1; i++)
   {
-    if (!isPalindrome(item[i]))
+    for (size_t j = 0; j < len2; j++)
     {
-      return false;
+      if (text1[i] == text2[j])
+      {
+        dp[i + 1][j + 1] = dp[i][j] + 1;
+      }
+      else
+      {
+        dp[i + 1][j + 1] = max(dp[i][j + 1], dp[i + 1][j]);
+      }
     }
   }
-  return true;
-}
-
-/**
- * @param start ,上一次切割字符的位置
- * @param end 当前遍历到的位置
- */
-void helper(string &s, vector<string> &item, int start, int end, int count)
-{
-  if (start >= s.length())
-  {
-    return;
-  }
-
-  if (end == s.length())
-  {
-    // 结束，将最后一个字符存入数组中
-    if (start != end)
-    {
-      item.push_back(s.substr(start, end - start));
-    }
-    if (isAllPalindrome(item))
-    {
-      minRes = min(minRes, count);
-    }
-    return;
-  }
-
-  // 选择不分割
-  helper(s, item, start, end + 1, count);
-
-  // 选择分割
-  item.push_back(s.substr(start, end - start));
-  helper(s, item, end, end + 1, count + 1);
-  item.pop_back();
-}
-
-int minCut(string s)
-{
-  vector<string> item;
-  helper(s, item, 0, 1, 0);
-  return minRes;
+  return dp[len1][len2];
 }
 
 int main()
 {
   std::cout << "《剑指》" << std::endl;
 
-  auto res = minCut("aab");
-  std::cout << "res:" << res << std::endl;
+  // auto res = minCut("cdd"); aab
+  // auto res = minCut("leet");
+  // auto res = minCut("aab");
+  // std::cout << "res:" << res << std::endl;
 
   // 遍历1维数组
   // for (auto ele : res)
