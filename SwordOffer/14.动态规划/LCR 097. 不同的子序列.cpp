@@ -68,59 +68,59 @@ s 和 t 由英文字母组成
  */
 int numDistinct(string s, string t)
 {
-  if (s.length() < t.length())
-  {
-    return 0;
-  }
-  if (s.length() == 0 && t.length() == 0)
-  {
-    return 1;
-  }
-  if (s.length() == 0 || t.length() == 0)
-  {
-    return 0;
-  }
-
-  int sLen = s.length();
-  int tLen = t.length();
-  vector<vector<unsigned long long>> dp(sLen + 1, vector<unsigned long long>(tLen + 1, 0));
-  dp[0][0] = 1;
-
-  // for (vector<long> ele : dp)
-  // {
-  //   for (auto element : ele)
-  //   {
-  //     std::cout << element << ",";
-  //   }
-  //   std::cout << std::endl;
-  // }
-  // std::cout << " --------------- " << std::endl;
-
-  for (int i = 0; i < sLen; i++)
-  {
-    dp[i + 1][0] = 1;
-    for (int j = 0; j < tLen && j <= i; j++) // j得长度要去小于等于i，否则太长没有满足条件的子序列
+    if (s.length() < t.length())
     {
-      if (s[i] == t[j]) // 遇到一样的字符
-      {
-        dp[i + 1][j + 1] = dp[i][j] + dp[i][j + 1];
-      }
-      else // 遇到不一样的字符，和更短的字符串一样的子序列个数
-      {
-        dp[i + 1][j + 1] = dp[i][j + 1];
-      }
+        return 0;
     }
-  }
-  // for (vector<long> ele : dp)
-  // {
-  //   for (auto element : ele)
-  //   {
-  //     std::cout << element << ",";
-  //   }
-  //   std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
-  return dp[sLen][tLen];
+    if (s.length() == 0 && t.length() == 0)
+    {
+        return 1;
+    }
+    if (s.length() == 0 || t.length() == 0)
+    {
+        return 0;
+    }
+
+    int sLen = s.length();
+    int tLen = t.length();
+    vector<vector<unsigned long long>> dp(sLen + 1, vector<unsigned long long>(tLen + 1, 0));
+    dp[0][0] = 1;
+
+    // for (vector<long> ele : dp)
+    // {
+    //   for (auto element : ele)
+    //   {
+    //     std::cout << element << ",";
+    //   }
+    //   std::cout << std::endl;
+    // }
+    // std::cout << " --------------- " << std::endl;
+
+    for (int i = 0; i < sLen; i++)
+    {
+        dp[i + 1][0] = 1;
+        for (int j = 0; j < tLen && j <= i; j++) // j得长度要去小于等于i，否则太长没有满足条件的子序列
+        {
+            if (s[i] == t[j]) // 遇到一样的字符
+            {
+                dp[i + 1][j + 1] = dp[i][j] + dp[i][j + 1];
+            }
+            else // 遇到不一样的字符，和更短的字符串一样的子序列个数
+            {
+                dp[i + 1][j + 1] = dp[i][j + 1];
+            }
+        }
+    }
+    // for (vector<long> ele : dp)
+    // {
+    //   for (auto element : ele)
+    //   {
+    //     std::cout << element << ",";
+    //   }
+    //   std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
+    return dp[sLen][tLen];
 }
 
 /**
@@ -134,66 +134,66 @@ int numDistinct(string s, string t)
  */
 void helper(string &s, string &t, int lPos, int sPos, int &resCount)
 {
-  if (sPos == t.length())
-  {
-    resCount++;
-    return;
-  }
+    if (sPos == t.length())
+    {
+        resCount++;
+        return;
+    }
 
-  if (lPos >= s.length())
-  {
-    return;
-  }
+    if (lPos >= s.length())
+    {
+        return;
+    }
 
-  if (s[lPos] != t[sPos]) // 遍历到不相等的字符，长字符串继续往后遍历
-  {
-    helper(s, t, lPos + 1, sPos, resCount);
-  }
-  else
-  { // 相等，面临两种情况
-    // 直接跳过
-    helper(s, t, lPos + 1, sPos, resCount);
+    if (s[lPos] != t[sPos]) // 遍历到不相等的字符，长字符串继续往后遍历
+    {
+        helper(s, t, lPos + 1, sPos, resCount);
+    }
+    else
+    { // 相等，面临两种情况
+        // 直接跳过
+        helper(s, t, lPos + 1, sPos, resCount);
 
-    // 或者一同消耗
-    helper(s, t, lPos + 1, sPos + 1, resCount);
-  }
+        // 或者一同消耗
+        helper(s, t, lPos + 1, sPos + 1, resCount);
+    }
 }
 
 int numDistinct1(string s, string t)
 {
-  if (s.length() < t.length())
-  {
-    return 0;
-  }
-  int resCount = 0;
-  helper(s, t, 0, 0, resCount);
-  return resCount;
+    if (s.length() < t.length())
+    {
+        return 0;
+    }
+    int resCount = 0;
+    helper(s, t, 0, 0, resCount);
+    return resCount;
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
+    std::cout << "《剑指》" << std::endl;
 
-  auto res = numDistinct("rabbbit", "rabbit");
-  std::cout << "res:" << res << std::endl;
+    auto res = numDistinct("rabbbit", "rabbit");
+    std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
