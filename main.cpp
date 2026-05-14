@@ -27,62 +27,38 @@
 using namespace std;
 
 /**
-LCR 099. 最小路径和
-https://leetcode.cn/problems/0i0mDW/description/
+LCR 100. 三角形最小路径和
+https://leetcode.cn/problems/IlPe0q/description/
 
-给定一个包含非负整数的 m x n 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
-说明：一个机器人每次只能向下或者向右移动一步。
+给定一个三角形 triangle ，找出自顶向下的最小路径和。
+每一步只能移动到下一行中相邻的结点上。相邻的结点 在这里指的是 下标 与 上一层结点下标 相同或者等于 上一层结点下标 + 1 的两个结点。
+也就是说，如果正位于当前行的下标 i ，那么下一步可以移动到下一行的下标 i 或 i + 1 。
 
 示例 1：
-输入：grid = [[1,3,1],[1,5,1],[4,2,1]]
-输出：7
-解释：因为路径 1→3→1→1→1 的总和最小。
+输入：triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]
+输出：11
+解释：如下面简图所示：
+   2
+  3 4
+ 6 5 7
+4 1 8 3
+自顶向下的最小路径和为 11（即，2 + 3 + 5 + 1 = 11）。
 
 示例 2：
-输入：grid = [[1,2,3],[4,5,6]]
-输出：12
+输入：triangle = [[-10]]
+输出：-10
 
 提示：
-m == grid.length
-n == grid[i].length
-1 <= m, n <= 200
-0 <= grid[i][j] <= 100
- */
+1 <= triangle.length <= 200
+triangle[0].length == 1
+triangle[i].length == triangle[i - 1].length + 1
+-104 <= triangle[i][j] <= 104
 
-/**
- * 1、输入一个二维数组的网格grid，网格每个位置是一个节点路径的权重，求从网格左上角到右下角的路径，最小的权重和
- * 2、使用动态规划解法：
- * - 状态转移方程式，使用f(i,j)表示从网格左上角到达网格坐标位置[i,j]时的最小路径和， f(0,0)=grid[0][0]
- * - 最左侧和最上面的路径和，是固定的只有一条路径到达，他们等于 f(0,j) = f(0,j-1)+grid[0][j]
- * - 而中间的位置每个坐标都有两条路径到达，分别是从左侧位置，和从上面位置到达
- * - 所以中间位置的最小路径和等于，两条路径中的最小值加上当前结点的权重: f(i,j) = min(f(i-1,j), f(i,j-1))+ grid[i][j]
- *
+进阶：
+你可以只使用 O(n) 的额外空间（n 为三角形的总行数）来解决这个问题吗？
  */
-int minPathSum(vector<vector<int>> &grid)
+int minimumTotal(vector<vector<int>> &triangle)
 {
-  int m = grid.size();
-  int n = grid[0].size();
-  vector<vector<int>> dp(m, vector<int>(n, 0));
-  dp[0][0] = grid[0][0];
-
-  for (int i = 1; i < m; i++)
-  {
-    dp[i][0] = dp[i - 1][0] + grid[i][0];
-  }
-
-  for (int j = 1; j < n; j++)
-  {
-    dp[0][j] = dp[0][j - 1] + grid[0][j];
-  }
-
-  for (int i = 1; i < m; i++)
-  {
-    for (int j = 1; j < n; j++)
-    {
-      dp[i][j] = min(dp[i][j - 1], dp[i - 1][j]) + grid[i][j];
-    }
-  }
-  return dp[m - 1][n - 1];
 }
 
 int main()
