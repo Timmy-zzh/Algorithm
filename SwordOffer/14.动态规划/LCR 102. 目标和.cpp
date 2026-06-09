@@ -66,49 +66,49 @@ https://leetcode.cn/problems/YaVDxD/description/
  */
 int findTargetSumWays(vector<int> &nums, int target)
 {
-  int n = nums.size();
-  vector<vector<int>> dp(n + 1, vector<int>(target + 1, 0));
-  dp[0][0] = 1;
+    int n = nums.size();
+    vector<vector<int>> dp(n + 1, vector<int>(target + 1, 0));
+    dp[0][0] = 1;
 
-  for (vector<int> ele : dp)
-  {
-    for (auto element : ele)
+    for (vector<int> ele : dp)
     {
-      std::cout << element << ",";
-    }
-    std::cout << std::endl;
-  }
-  std::cout << std::endl;
-
-  for (int i = 1; i <= n; i++)
-  {
-    for (int j = 0; j <= target; j++)
-    {
-      int idx1 = j + nums[i - 1];
-      if (idx1 >= 0 && idx1 <= target)
-      {
-        dp[i][j] += dp[i - 1][idx1];
-      }
-
-      int idx2 = j - nums[i - 1];
-      if (idx2 >= 0 && idx2 <= target)
-      {
-        dp[i][j] += dp[i - 1][idx2];
-      }
-
-      std::cout << "---i:" << i << " ,j:" << j << ",nums[i]:" << nums[i - 1] << std::endl;
-      for (vector<int> ele : dp)
-      {
         for (auto element : ele)
         {
-          std::cout << element << ",";
+            std::cout << element << ",";
         }
         std::cout << std::endl;
-      }
-      std::cout << std::endl;
     }
-  }
-  return dp[n][target];
+    std::cout << std::endl;
+
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 0; j <= target; j++)
+        {
+            int idx1 = j + nums[i - 1];
+            if (idx1 >= 0 && idx1 <= target)
+            {
+                dp[i][j] += dp[i - 1][idx1];
+            }
+
+            int idx2 = j - nums[i - 1];
+            if (idx2 >= 0 && idx2 <= target)
+            {
+                dp[i][j] += dp[i - 1][idx2];
+            }
+
+            std::cout << "---i:" << i << " ,j:" << j << ",nums[i]:" << nums[i - 1] << std::endl;
+            for (vector<int> ele : dp)
+            {
+                for (auto element : ele)
+                {
+                    std::cout << element << ",";
+                }
+                std::cout << std::endl;
+            }
+            std::cout << std::endl;
+        }
+    }
+    return dp[n][target];
 }
 
 /**
@@ -121,56 +121,56 @@ int findTargetSumWays(vector<int> &nums, int target)
 
 void helper(vector<int> &nums, int target, int i, int &resNum)
 {
-  if (i == nums.size())
-  {
-    if (target == 0)
+    if (i == nums.size())
     {
-      resNum = resNum + 1;
+        if (target == 0)
+        {
+            resNum = resNum + 1;
+        }
+        return;
     }
-    return;
-  }
 
-  // 当前元素的两种选择
-  helper(nums, target + nums[i], i + 1, resNum);
+    // 当前元素的两种选择
+    helper(nums, target + nums[i], i + 1, resNum);
 
-  helper(nums, target - nums[i], i + 1, resNum);
+    helper(nums, target - nums[i], i + 1, resNum);
 }
 
 int findTargetSumWays1(vector<int> &nums, int target)
 {
-  int resNum = 0;
-  helper(nums, target, 0, resNum);
-  return resNum;
+    int resNum = 0;
+    helper(nums, target, 0, resNum);
+    return resNum;
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
+    std::cout << "《剑指》" << std::endl;
 
-  // auto res = minCut("cdd"); aab
-  // auto res = minCut("leet");
-  vector<int> nums = {1, 1, 1, 1, 1};
-  int target = 3;
-  auto res = findTargetSumWays(nums, target);
-  std::cout << "res:" << res << std::endl;
+    // auto res = minCut("cdd"); aab
+    // auto res = minCut("leet");
+    vector<int> nums = {1, 1, 1, 1, 1};
+    int target = 3;
+    auto res = findTargetSumWays(nums, target);
+    std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
