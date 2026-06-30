@@ -74,50 +74,50 @@ nums 中的所有元素 互不相同
  */
 int combinationSum4(vector<int> &nums, int target)
 {
-  vector<unsigned int> dp(target + 1, 0);
-  dp[0] = 1;
+    vector<unsigned int> dp(target + 1, 0);
+    dp[0] = 1;
 
-  for (int i = 1; i <= target; i++)
-  {
-    for (auto num : nums)
+    for (int i = 1; i <= target; i++)
     {
-      if (i >= num)
-      {
-        dp[i] += dp[i - num];
-      }
+        for (auto num : nums)
+        {
+            if (i >= num)
+            {
+                dp[i] += dp[i - num];
+            }
+        }
     }
-  }
-  return dp[target];
+    return dp[target];
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
+    std::cout << "《剑指》" << std::endl;
 
-  // auto res = minCut("cdd"); aab
-  // auto res = minCut("leet");
-  vector<int> coins = {1, 2, 3};
-  int amount = 4;
-  auto res = combinationSum4(coins, amount);
-  std::cout << "res:" << res << std::endl;
+    // auto res = minCut("cdd"); aab
+    // auto res = minCut("leet");
+    vector<int> coins = {1, 2, 3};
+    int amount = 4;
+    auto res = combinationSum4(coins, amount);
+    std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
