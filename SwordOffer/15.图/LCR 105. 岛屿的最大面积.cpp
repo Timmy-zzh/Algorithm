@@ -65,61 +65,9 @@ grid[i][j] is either 0 or 1
  */
 void getArea(int m, int n, vector<vector<int>> &grid, vector<vector<bool>> &visited, int i, int j, int &itemArea)
 {
-  if (visited[i][j])
-  {
-    return;
-  }
-
-  visited[i][j] = true;
-  itemArea++;
-
-  // 然后查找上下左右四个方向的位置元素，
-  // 判断是否遍历过，是否是陆地，是否有越界，满足条件插入到队列的末尾
-
-  // 上
-  if (i - 1 >= 0 && visited[i - 1][j] == false && grid[i - 1][j] == 1)
-  {
-    getArea(m, n, grid, visited, i - 1, j, itemArea);
-  }
-
-  // 下
-  if (i + 1 < m && visited[i + 1][j] == false && grid[i + 1][j] == 1)
-  {
-    getArea(m, n, grid, visited, i + 1, j, itemArea);
-  }
-
-  // 左
-  if (j - 1 >= 0 && visited[i][j - 1] == false && grid[i][j - 1] == 1)
-  {
-    getArea(m, n, grid, visited, i, j - 1, itemArea);
-  }
-
-  // 右
-  if (j + 1 < n && visited[i][j + 1] == false && grid[i][j + 1] == 1)
-  {
-    getArea(m, n, grid, visited, i, j + 1, itemArea);
-  }
-}
-
-/**
- * 广度优先遍历
- * - 使用队列，vected
- */
-void getArea1(int m, int n, vector<vector<int>> &grid, vector<vector<bool>> &visited, int i, int j, int &itemArea)
-{
-  queue<vector<int>> queue;
-  queue.push({i, j});
-
-  while (!queue.empty())
-  {
-    // 取出队列中的位置
-    auto node = queue.front();
-    queue.pop();
-    int i = node[0];
-    int j = node[1];
     if (visited[i][j])
     {
-      continue;
+        return;
     }
 
     visited[i][j] = true;
@@ -131,92 +79,144 @@ void getArea1(int m, int n, vector<vector<int>> &grid, vector<vector<bool>> &vis
     // 上
     if (i - 1 >= 0 && visited[i - 1][j] == false && grid[i - 1][j] == 1)
     {
-      queue.push({i - 1, j});
+        getArea(m, n, grid, visited, i - 1, j, itemArea);
     }
 
     // 下
     if (i + 1 < m && visited[i + 1][j] == false && grid[i + 1][j] == 1)
     {
-      queue.push({i + 1, j});
+        getArea(m, n, grid, visited, i + 1, j, itemArea);
     }
 
     // 左
     if (j - 1 >= 0 && visited[i][j - 1] == false && grid[i][j - 1] == 1)
     {
-      queue.push({i, j - 1});
+        getArea(m, n, grid, visited, i, j - 1, itemArea);
     }
 
     // 右
     if (j + 1 < n && visited[i][j + 1] == false && grid[i][j + 1] == 1)
     {
-      queue.push({i, j + 1});
+        getArea(m, n, grid, visited, i, j + 1, itemArea);
     }
-  }
+}
+
+/**
+ * 广度优先遍历
+ * - 使用队列，vected
+ */
+void getArea1(int m, int n, vector<vector<int>> &grid, vector<vector<bool>> &visited, int i, int j, int &itemArea)
+{
+    queue<vector<int>> queue;
+    queue.push({i, j});
+
+    while (!queue.empty())
+    {
+        // 取出队列中的位置
+        auto node = queue.front();
+        queue.pop();
+        int i = node[0];
+        int j = node[1];
+        if (visited[i][j])
+        {
+            continue;
+        }
+
+        visited[i][j] = true;
+        itemArea++;
+
+        // 然后查找上下左右四个方向的位置元素，
+        // 判断是否遍历过，是否是陆地，是否有越界，满足条件插入到队列的末尾
+
+        // 上
+        if (i - 1 >= 0 && visited[i - 1][j] == false && grid[i - 1][j] == 1)
+        {
+            queue.push({i - 1, j});
+        }
+
+        // 下
+        if (i + 1 < m && visited[i + 1][j] == false && grid[i + 1][j] == 1)
+        {
+            queue.push({i + 1, j});
+        }
+
+        // 左
+        if (j - 1 >= 0 && visited[i][j - 1] == false && grid[i][j - 1] == 1)
+        {
+            queue.push({i, j - 1});
+        }
+
+        // 右
+        if (j + 1 < n && visited[i][j + 1] == false && grid[i][j + 1] == 1)
+        {
+            queue.push({i, j + 1});
+        }
+    }
 }
 
 int maxAreaOfIsland(vector<vector<int>> &grid)
 {
-  int resArea = 0;
-  int m = grid.size();
-  int n = grid[0].size();
-  vector<vector<bool>> visited(m, vector<bool>(n, false));
+    int resArea = 0;
+    int m = grid.size();
+    int n = grid[0].size();
+    vector<vector<bool>> visited(m, vector<bool>(n, false));
 
-  for (int i = 0; i < m; i++)
-  {
-    for (int j = 0; j < n; j++)
+    for (int i = 0; i < m; i++)
     {
-      if (grid[i][j] == 1 && !visited[i][j])
-      {
-        int itemArea = 0;
-        getArea(m, n, grid, visited, i, j, itemArea);
-        std::cout << "i:" << i << " ,j:" << j << " ,itemArea:" << itemArea << "," << std::endl;
-        resArea = max(resArea, itemArea);
-      }
-      visited[i][j] = true;
+        for (int j = 0; j < n; j++)
+        {
+            if (grid[i][j] == 1 && !visited[i][j])
+            {
+                int itemArea = 0;
+                getArea(m, n, grid, visited, i, j, itemArea);
+                std::cout << "i:" << i << " ,j:" << j << " ,itemArea:" << itemArea << "," << std::endl;
+                resArea = max(resArea, itemArea);
+            }
+            visited[i][j] = true;
+        }
     }
-  }
-  return resArea;
+    return resArea;
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
+    std::cout << "《剑指》" << std::endl;
 
-  // vector<vector<int>> grid = {{0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
-  //                             {0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0},
-  //                             {0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-  //                             {0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0},
-  //                             {0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0},
-  //                             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
-  //                             {0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0},
-  //                             {0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0}};
+    // vector<vector<int>> grid = {{0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+    //                             {0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0},
+    //                             {0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+    //                             {0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0},
+    //                             {0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0},
+    //                             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
+    //                             {0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0},
+    //                             {0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0}};
 
-  vector<vector<int>> grid = {
-      {1, 1, 0, 0, 0},
-      {1, 1, 0, 0, 0},
-      {0, 0, 0, 1, 1},
-      {0, 0, 0, 1, 1}};
+    vector<vector<int>> grid = {
+        {1, 1, 0, 0, 0},
+        {1, 1, 0, 0, 0},
+        {0, 0, 0, 1, 1},
+        {0, 0, 0, 1, 1}};
 
-  auto res = maxAreaOfIsland(grid);
-  std::cout << "res:" << res << std::endl;
+    auto res = maxAreaOfIsland(grid);
+    std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
