@@ -69,53 +69,53 @@ graph{u} 的所有值 互不相同
 
 bool bfs(vector<vector<int>> &graph, vector<bool> &visited, vector<int> &colors, int m)
 {
-  queue<int> queue;
-  queue.push(m);
-  visited[m] = true;
+    queue<int> queue;
+    queue.push(m);
+    visited[m] = true;
 
-  while (!queue.empty())
-  {
-    int i = queue.front();
-    queue.pop();
-
-    if (graph[i].size() == 0)
+    while (!queue.empty())
     {
-      continue;
+        int i = queue.front();
+        queue.pop();
+
+        if (graph[i].size() == 0)
+        {
+            continue;
+        }
+
+        // 遍历当前节点，所有的关联节点，添加判断他存放的集合位置
+        for (int j = 0; j < graph[i].size(); j++)
+        {
+            int k = graph[i][j];
+            std::cout << "i:" << i << "  ,k:" << k << std::endl;
+
+            if (colors[i] == colors[k]) // 当前节点i，与关联节点k，存在相同的集合中，不符合题目要求
+            {
+                return false;
+            }
+
+            if (colors[k] == 0) // 未分配节点，分配到与当前节点对应的集合中去
+            {
+                colors[k] = 0 - colors[i];
+            }
+
+            if (visited[k])
+            {
+                continue;
+            }
+
+            for (auto ele : colors)
+            {
+                std::cout << ele << ",";
+            }
+            std::cout << std::endl;
+
+            visited[k] = true;
+            queue.push(k);
+        }
     }
 
-    // 遍历当前节点，所有的关联节点，添加判断他存放的集合位置
-    for (int j = 0; j < graph[i].size(); j++)
-    {
-      int k = graph[i][j];
-      std::cout << "i:" << i << "  ,k:" << k << std::endl;
-
-      if (colors[i] == colors[k]) // 当前节点i，与关联节点k，存在相同的集合中，不符合题目要求
-      {
-        return false;
-      }
-
-      if (colors[k] == 0) // 未分配节点，分配到与当前节点对应的集合中去
-      {
-        colors[k] = 0 - colors[i];
-      }
-
-      if (visited[k])
-      {
-        continue;
-      }
-
-      for (auto ele : colors)
-      {
-        std::cout << ele << ",";
-      }
-      std::cout << std::endl;
-
-      visited[k] = true;
-      queue.push(k);
-    }
-  }
-
-  return true;
+    return true;
 }
 
 /**
@@ -124,23 +124,23 @@ bool bfs(vector<vector<int>> &graph, vector<bool> &visited, vector<int> &colors,
  */
 bool isBipartite(vector<vector<int>> &graph)
 {
-  int m = graph.size();
-  vector<bool> visited(m, false);
-  vector<int> colors(m, 0);
+    int m = graph.size();
+    vector<bool> visited(m, false);
+    vector<int> colors(m, 0);
 
-  for (int i = 0; i < m; i++)
-  {
-    if (!visited[i] && graph[i].size() > 0)
+    for (int i = 0; i < m; i++)
     {
-      colors[i] = 1;
-      bool res = bfs(graph, visited, colors, i); // 一个区域命中还不够，还所有的都命中才行
-      if (!res)
-      {
-        return false;
-      }
+        if (!visited[i] && graph[i].size() > 0)
+        {
+            colors[i] = 1;
+            bool res = bfs(graph, visited, colors, i); // 一个区域命中还不够，还所有的都命中才行
+            if (!res)
+            {
+                return false;
+            }
+        }
     }
-  }
-  return true;
+    return true;
 }
 
 /**
@@ -235,101 +235,101 @@ bool isBipartite(vector<vector<int>> &graph)
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
+    std::cout << "《剑指》" << std::endl;
 
-  /**
-   * 输入：graph = {{1,2,3},{0,2},{0,1,3},{0,2}}
-输出：false
-解释：不能将节点分割成两个独立的子集，以使每条边都连通一个子集中的一个节点与另一个子集中的一个节点。
+    /**
+     * 输入：graph = {{1,2,3},{0,2},{0,1,3},{0,2}}
+  输出：false
+  解释：不能将节点分割成两个独立的子集，以使每条边都连通一个子集中的一个节点与另一个子集中的一个节点。
 
-示例 2：
-输入：graph = {{1,3},{0,2},{1,3},{0,2}}
-   */
+  示例 2：
+  输入：graph = {{1,3},{0,2},{1,3},{0,2}}
+     */
 
-  // vector<vector<int>> grid = {
-  //     {1, 2, 3},
-  //     {0, 2},
-  //     {0, 1, 3},
-  //     {0, 2}};
-  // vector<vector<int>> grid = {
-  //     {1, 3},
-  //     {0, 2},
-  //     {1, 3},
-  //     {0, 2}};
+    // vector<vector<int>> grid = {
+    //     {1, 2, 3},
+    //     {0, 2},
+    //     {0, 1, 3},
+    //     {0, 2}};
+    // vector<vector<int>> grid = {
+    //     {1, 3},
+    //     {0, 2},
+    //     {1, 3},
+    //     {0, 2}};
 
-  vector<vector<int>> grid = {
-      {2, 4},
-      {2, 3, 4},
-      {0, 1},
-      {1},
-      {0, 1},
-      {7},
-      {9},
-      {5},
-      {},
-      {6},
-      {12, 14},
-      {},
-      {10},
-      {},
-      {10},
-      {19},
-      {18},
-      {},
-      {16},
-      {15},
-      {23},
-      {23},
-      {},
-      {20, 21},
-      {},
-      {},
-      {27},
-      {26},
-      {},
-      {},
-      {34},
-      {33, 34},
-      {},
-      {31},
-      {30, 31},
-      {38, 39},
-      {37, 38, 39},
-      {36},
-      {35, 36},
-      {35, 36},
-      {43},
-      {},
-      {},
-      {40},
-      {},
-      {49},
-      {47, 48, 49},
-      {46, 48, 49},
-      {46, 47, 49},
-      {45, 46, 47, 48},
-  };
+    vector<vector<int>> grid = {
+        {2, 4},
+        {2, 3, 4},
+        {0, 1},
+        {1},
+        {0, 1},
+        {7},
+        {9},
+        {5},
+        {},
+        {6},
+        {12, 14},
+        {},
+        {10},
+        {},
+        {10},
+        {19},
+        {18},
+        {},
+        {16},
+        {15},
+        {23},
+        {23},
+        {},
+        {20, 21},
+        {},
+        {},
+        {27},
+        {26},
+        {},
+        {},
+        {34},
+        {33, 34},
+        {},
+        {31},
+        {30, 31},
+        {38, 39},
+        {37, 38, 39},
+        {36},
+        {35, 36},
+        {35, 36},
+        {43},
+        {},
+        {},
+        {40},
+        {},
+        {49},
+        {47, 48, 49},
+        {46, 48, 49},
+        {46, 47, 49},
+        {45, 46, 47, 48},
+    };
 
-  auto res = isBipartite(grid);
-  std::cout << "res:" << res << std::endl;
+    auto res = isBipartite(grid);
+    std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //     for (auto element : ele)
+    //     {
+    //         std::cout << element << ",";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
