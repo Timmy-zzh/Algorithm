@@ -26,292 +26,261 @@
 using namespace std;
 
 /**
-LCR 106. 判断二分图
-https://leetcode.cn/problems/vEAB3K/description/
+LCR 107. 01 矩阵
+https://leetcode.cn/problems/2bCMpM/description/
 
-存在一个 无向图 ，图中有 n 个节点。其中每个节点都有一个介于 0 到 n - 1 之间的唯一编号。
-给定一个二维数组 graph ，表示图，其中 graph{u} 是一个节点数组，由节点 u 的邻接节点组成。形式上，对于 graph{u} 中的每个 v ，都存在一条位于节点 u 和节点 v 之间的无向边。该无向图同时具有以下属性：
-不存在自环（graph{u} 不包含 u）。
-不存在平行边（graph{u} 不包含重复值）。
-如果 v 在 graph{u} 内，那么 u 也应该在 graph{v} 内（该图是无向图）
-这个图可能不是连通图，也就是说两个节点 u 和 v 之间可能不存在一条连通彼此的路径。
-二分图 定义：如果能将一个图的节点集合分割成两个独立的子集 A 和 B ，并使图中的每一条边的两个节点一个来自 A 集合，一个来自 B 集合，就将这个图称为 二分图 。
-如果图是二分图，返回 true ；否则，返回 false 。
+给定一个由 0 和 1 组成的矩阵 mat ，请输出一个大小相同的矩阵，其中每一个格子是 mat 中对应位置元素到最近的 0 的距离。
+两个相邻元素间的距离为 1。
 
 示例 1：
-
-输入：graph = {{1,2,3},{0,2},{0,1,3},{0,2}}
-输出：false
-解释：不能将节点分割成两个独立的子集，以使每条边都连通一个子集中的一个节点与另一个子集中的一个节点。
+输入：mat = [[0,0,0],[0,1,0],[0,0,0]]
+输出：[[0,0,0],[0,1,0],[0,0,0]]
 
 示例 2：
-输入：graph = {{1,3},{0,2},{1,3},{0,2}}
-输出：true
-解释：可以将节点分成两组: {0, 2} 和 {1, 3} 。
+输入：mat = [[0,0,0],[0,1,0],[1,1,1]]
+输出：[[0,0,0],[0,1,0],[1,2,1]]
 
 提示：
-graph.length == n
-1 <= n <= 100
-0 <= graph{u}.length < n
-0 <= graph{u}{i} <= n - 1
-graph{u} 不会包含 u
-graph{u} 的所有值 互不相同
-如果 graph{u} 包含 v，那么 graph{v} 也会包含 u
+m == mat.length
+n == mat[i].length
+1 <= m, n <= 104
+1 <= m * n <= 104
+mat[i][j] is either 0 or 1.
+mat 中至少有一个 0
  */
 
 /**
- * 之前的实现逻辑有个漏洞，就是没加入集合中的元素默认添加到集合A中，其实也可以添加到集合B中去。
- * - 可以采用广度优先遍历算法 + 标记法处理
- * - 广度优先搜索算法，采用队列queue保存元素，采用二维数组visited保存遍历标记
- * - 采用color二维数组标记存放到集合A（-1）与存放到集合B（1）的选择，默认是（0）值还没有分配
- * - 在广度优先搜索算法的过程中，判断当前遍历的元素保存在那个集合中，如果当前元素在集合A中，那与之链接的节点要么还没有分配（-1值），要么已在集合B中，如果已分配在集合A中了，那就不匹配了，直接返回false，反面情况类似思路处理
+ * 1、审题：输入一个二维矩阵，矩阵中的元素由0和1组成，其中的一个元素到上下左右位置的距离是1，现在要输出一个与mat原始数组相同大小的数组，
+ * - 要求新数组grid中的元素是原始数组mat中元素位置，到距离最新的元素0的位置的距离值。
+ * 2、解题：广度优先算法
+ * - 遍历原始数组mat，对于遍历到的每个位置的元素，去四周查找元素值为0的距离，使用广度优先搜索算法，不断将上下左右位置的找出来
+ * - 如果遇到元素值为0的元素，则停止广度搜索，将距离该位置的距离直接返回即可
+ * = 还可以使用递归算法
+ * = 再尝试深度优先算法
  */
 
-bool bfs(vector<vector<int>> &graph, vector<bool> &visited, vector<int> &colors, int m)
+int getDistance(vector<vector<int>> &mat, int x, int y)
 {
-  queue<int> queue;
-  queue.push(m);
-  visited[m] = true;
+
+  int m = mat.size();
+  int n = mat[0].size();
+  vector<vector<bool>> visited(m, vector<bool>(n, false));
+  std::cout << "x:" << x << " ,y:" << y << std::endl;
+
+  for (vector<int> ele : mat)
+  {
+    for (auto element : ele)
+    {
+      std::cout << element << ",";
+    }
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+
+  queue<vector<int>> queue;
+  queue.push({x, y});
+  visited[x][y] = true;
+
+  queue.push({-1, -1});
+  int distance = 1;
+
+  vector<vector<int>> dirs = {
+      {0, -1}, // 左
+      {0, 1},  // 右
+      {-1, 0}, // 上
+      {1, 0},  // 下
+  };
 
   while (!queue.empty())
   {
-    int i = queue.front();
+    vector<int> pos = queue.front();
     queue.pop();
 
-    if (graph[i].size() == 0)
+    std::cout << "==== pos[0]:" << pos[0] << " ,pos[1]:" << pos[1] << std::endl;
+    if (pos[0] == -1 && pos[1] == -1)
     {
+      distance++;
+      std::cout << "<<< queue.push({-1, -1});" << std::endl;
+      queue.push({-1, -1});
       continue;
     }
 
-    // 遍历当前节点，所有的关联节点，添加判断他存放的集合位置
-    for (int j = 0; j < graph[i].size(); j++)
+    // 遍历上下左右的四个位置的元素
+    for (int i = 0; i < dirs.size(); i++)
     {
-      int k = graph[i][j];
-      std::cout << "i:" << i << "  ,k:" << k << std::endl;
+      int r = pos[0] + dirs[i][0];
+      int c = pos[1] + dirs[i][1];
 
-      if (colors[i] == colors[k]) // 当前节点i，与关联节点k，存在相同的集合中，不符合题目要求
+      if (r >= 0 && r < m && c >= 0 && c < n)
       {
-        return false;
-      }
+        std::cout << "x:" << x << " ,y:" << y << " ,r:" << r << " ,c:" << c << std::endl;
+        if (visited[r][c])
+        {
+          continue;
+        }
+        visited[r][c] = true;
 
-      if (colors[k] == 0) // 未分配节点，分配到与当前节点对应的集合中去
-      {
-        colors[k] = 0 - colors[i];
+        if (mat[r][c] == 1)
+        {
+          std::cout << "x:" << x << " ,y:" << y << " ,r:" << r << " ,c:" << c << " ,queue.push({r, c}); " << " ,distance:" << distance << std::endl;
+          queue.push({r, c});
+        }
+        else
+        {
+          std::cout << "---- x:" << x << " ,y:" << y << " ,r:" << r << " ,c:" << c << " ,distance:" << distance << std::endl;
+          return distance;
+        }
       }
-
-      if (visited[k])
-      {
-        continue;
-      }
-
-      for (auto ele : colors)
-      {
-        std::cout << ele << ",";
-      }
-      std::cout << std::endl;
-
-      visited[k] = true;
-      queue.push(k);
     }
   }
 
-  return true;
+  return distance;
 }
 
-/**
- * graph是链接表
- * - 不适合使用二维矩阵
- */
-bool isBipartite(vector<vector<int>> &graph)
+vector<vector<int>> updateMatrix1(vector<vector<int>> &mat)
 {
-  int m = graph.size();
-  vector<bool> visited(m, false);
-  vector<int> colors(m, 0);
+  int m = mat.size();
+  int n = mat[0].size();
+
+  vector<vector<int>> grid(m, vector<int>(n, 0));
 
   for (int i = 0; i < m; i++)
   {
-    if (!visited[i] && graph[i].size() > 0)
+    for (int j = 0; j < n; j++)
     {
-      colors[i] = 1;
-      bool res = bfs(graph, visited, colors, i); // 一个区域命中还不够，还所有的都命中才行
-      if (!res)
+      if (mat[i][j] == 1)
       {
-        return false;
+        grid[i][j] = getDistance(mat, i, j);
+
+        for (vector<int> ele : grid)
+        {
+          for (auto element : ele)
+          {
+            std::cout << element << ",";
+          }
+          std::cout << std::endl;
+        }
+        std::cout << std::endl;
       }
     }
   }
-  return true;
+  return grid;
 }
 
 /**
- * 1、审题：输入一个二维数组，表示图结构，使用的数据结构是邻接表，每个节点关联的所有节点放到一个集合中
- * - 现在要将所有的节点分开成两个集合阵营set，要求一条边的两个节点，一个节点在集合A中，另一个节点在集合B中，
- * - 如果所有的节点都能按照这个规则拆分成两个集合，则返回true，否则返回false
- * 2、解题：
- * - 新建两个vector集合 setA，setB，用于保存节点需要存储的阵营
- * - 遍历所有的节点
- * -- 如果当前结合，在两个集合中都不存在，在默认将该节点添加到集合A中去，然后其他与之关联的节点存放到集合B中去
- * -- 如果当前节点存在集合A中，其他节点就需要保存到集合B中去，如果发现关联节点已经保存到集合A中去了，则与题意不符合，返回false
- * -- 相反，如果当前遍历的节点已经在集合B中了，则与之关联的节点应该保存到集合A中去，如果关联的节点已经保存到集合B中了，与题意不符合，返回false
- * - 最后返回true
+ * 1、上面的解题思路，是遍历所有的元素值为1的点，从该点开始进行广度优先搜索算法，不断将周围的元素值为1的节点添加到队列中来
+ * - 每次向外围广度扩散查询时，距离开始遍历节点的锚点值距离就加1；直到遇到元素值为0的节点，才停止，并返回当前距离值
+ * - 那如何直到当前周围一圈，也就是同一个距离的节点都遍历完成了呢？通过插入特殊节点值来判断，每当同距离的一圈节点值遍历完成后，就插入一个新的特殊节点值。
+ * - 并且为了过滤重复节点的遍历，需要使用visited数组来记录遍历过的值 bool值保存
+ * = 但是这样的计算方式，就需要每次都要从新的节点位置开始扩散遍历，存在很多重复计算
+ * 2、为了解决这个问题，需要换个思路，还是使用广度优先遍历算法bfs，只不过是先将所有的元素值为0的节点添加到队列中
+ * - 原始数组的距离，如果元素值为0的距离值为0，元素值为1的距离值为max最大值，
+ * - 从队列中不断取出元素，去查找四周位置的节点，如果发现周围元素的距离值大于遍历节点位置的距离值加1，则需要更新为新的节点值，因为发现存在更短距离的节点值了
+ * - 并且将当前更新的节点添加到队列中去。
  */
-// bool isBipartite1(vector<vector<int>> &graph)
-// {
-//   vector<int> setA{};
-//   vector<int> setB{};
+vector<vector<int>> updateMatrix(vector<vector<int>> &mat)
+{
+  int m = mat.size();
+  int n = mat[0].size();
+  queue<vector<int>> queue;
+  vector<vector<int>> disVec(m, vector<int>(n, 0)); // 新的矩阵，用于保存节点元素距离值的
 
-//   /**
-//    * 新家一个方法，用于判断元素ele是否在集合vector中
-//    * - 存在的话，则返回true，否则返回false
-//    * - 内部使用find 函数
-//    */
-//   auto contains = {}(const vector<int> &vec, const int &target)
-//   {
-//     auto it = std::find(vec.begin(), vec.end(), target);
-//     if (it != vec.end()) // target值在集合vec中存在
-//     {
-//       return true;
-//     }
-//     return false;
-//   };
+  // 遍历找出所有的元素为0的节点，更新距离值，并将该节点添加到队列中去
+  for (int i = 0; i < m; i++)
+  {
+    for (int j = 0; j < n; j++)
+    {
+      if (mat[i][j] == 0)
+      {
+        queue.push({i, j});
+        disVec[i][j] = 0;
+      }
+      else
+      {
+        disVec[i][j] = INT32_MAX;
+      }
+    }
+  }
 
-//   int m = graph.size();
-//   for (int i = 0; i < m; i++)
-//   {
-//     int type = 0;
-//     if (!contains(setA, i) && !contains(setB, i)) // 两个集合中都不存在
-//     {
-//       type = 0;
-//       setA.push_back(i);
-//     }
-//     else if (contains(setA, i)) // 当前节点存在于集合A中
-//     {
-//       type = 1;
-//     }
-//     else if (contains(setB, i)) // 当前节点存在于集合B中
-//     {
-//       type = 2;
-//     }
+  // 四周位置的坐标增向量
+  vector<vector<int>> dirs = {
+      {0, -1}, // 左
+      {0, 1},  // 右
+      {-1, 0}, // 上
+      {1, 0}   // 下
+  };
 
-//     int n = graph{i}.size();
-//     for (int j = 0; j < n; j++)
-//     {
-//       if (type == 0) // 这里有问题，可以放到集合A中，也可以放到集合B中去，还是要用广度优先搜索算法来实现
-//       {
-//         setB.push_back(graph{i} {j});
-//         continue;
-//       }
+  // 不断从队列中取出节点值坐标，查找他四周的节点，并判断距离
+  while (!queue.empty())
+  {
+    vector<int> item = queue.front();
+    queue.pop();
+    int i = item[0];
+    int j = item[1];
 
-//       if (type == 1)
-//       {
-//         if (contains(setA, graph{i} {j})) // 遍历节点在集合A中，关联节点也在集合A中，不符合要求
-//         {
-//           return false;
-//         }
-//         if (!contains(setB, graph{i} {j}))
-//         {
-//           setB.push_back(graph{i} {j});
-//         }
-//         continue;
-//       }
+    for (int k = 0; k < dirs.size(); k++)
+    {
+      int r = i + dirs[k][0];
+      int c = j + dirs[k][1];
 
-//       if (type == 2)
-//       {
-//         if (contains(setB, graph{i} {j})) // 遍历节点在集合B中，关联节点也在集合B中，不符合要求
-//         {
-//           return false;
-//         }
-//         if (!contains(setA, graph{i} {j}))
-//         {
-//           setA.push_back(graph{i} {j});
-//         }
-//         continue;
-//       }
-//     }
-//   }
+      if (0 <= r && r < m && 0 <= c && c < n)
+      {
+        if (disVec[r][c] > disVec[i][j] + 1)
+        {
+          disVec[r][c] = disVec[i][j] + 1;
+          queue.push({r, c});
+        }
+      }
+    }
+  }
 
-//   return true;
-// }
+  return disVec;
+}
 
 int main()
 {
   std::cout << "《剑指》" << std::endl;
 
-  /**
-   * 输入：graph = {{1,2,3},{0,2},{0,1,3},{0,2}}
-输出：false
-解释：不能将节点分割成两个独立的子集，以使每条边都连通一个子集中的一个节点与另一个子集中的一个节点。
-
-示例 2：
-输入：graph = {{1,3},{0,2},{1,3},{0,2}}
-   */
-
-  // vector<vector<int>> grid = {
-  //     {1, 2, 3},
-  //     {0, 2},
-  //     {0, 1, 3},
-  //     {0, 2}};
-  // vector<vector<int>> grid = {
-  //     {1, 3},
-  //     {0, 2},
-  //     {1, 3},
-  //     {0, 2}};
-
   vector<vector<int>> grid = {
-      {2, 4},
-      {2, 3, 4},
-      {0, 1},
-      {1},
-      {0, 1},
-      {7},
-      {9},
-      {5},
-      {},
-      {6},
-      {12, 14},
-      {},
-      {10},
-      {},
-      {10},
-      {19},
-      {18},
-      {},
-      {16},
-      {15},
-      {23},
-      {23},
-      {},
-      {20, 21},
-      {},
-      {},
-      {27},
-      {26},
-      {},
-      {},
-      {34},
-      {33, 34},
-      {},
-      {31},
-      {30, 31},
-      {38, 39},
-      {37, 38, 39},
-      {36},
-      {35, 36},
-      {35, 36},
-      {43},
-      {},
-      {},
-      {40},
-      {},
-      {49},
-      {47, 48, 49},
-      {46, 48, 49},
-      {46, 47, 49},
-      {45, 46, 47, 48},
+      {0, 0, 0},
+      {0, 1, 0},
+      {0, 0, 0},
   };
 
-  auto res = isBipartite(grid);
-  std::cout << "res:" << res << std::endl;
+  // vector<vector<int>> grid = {
+  //     {0, 0, 0},
+  //     {0, 1, 0},
+  //     {1, 1, 1},
+  // };
+
+  // vector<vector<int>> grid = {
+  //     {1, 0, 1, 1, 0, 0, 1, 0, 0, 1},
+  //     {0, 1, 1, 0, 1, 0, 1, 0, 1, 1},
+  //     {0, 0, 1, 0, 1, 0, 0, 1, 0, 0},
+  //     {1, 0, 1, 0, 1, 1, 1, 1, 1, 1},
+  //     {0, 1, 0, 1, 1, 0, 0, 0, 0, 1},
+  //     {0, 0, 1, 0, 1, 1, 1, 0, 1, 0},
+  //     {0, 1, 0, 1, 0, 1, 0, 0, 1, 1},
+  //     {1, 0, 0, 0, 1, 1, 1, 1, 0, 1},
+  //     {1, 1, 1, 1, 1, 1, 1, 0, 1, 0},
+  //     {1, 1, 1, 1, 0, 1, 0, 0, 1, 1},
+  // };
+
+  // vector<vector<int>> grid = {
+  //     {1, 1, 0, 0, 1, 0, 0, 1, 1, 0},
+  //     {1, 0, 0, 1, 0, 1, 1, 1, 1, 1},
+  //     {1, 1, 1, 0, 0, 1, 1, 1, 1, 0},
+  //     {0, 1, 1, 1, 0, 1, 1, 1, 1, 1},
+  //     {0, 0, 1, 1, 1, 1, 1, 1, 1, 0},
+  //     {1, 1, 1, 1, 1, 1, 0, 1, 1, 1},
+  //     {0, 1, 1, 1, 1, 1, 1, 0, 0, 1},
+  //     {1, 1, 1, 1, 1, 0, 0, 1, 1, 1},
+  //     {0, 1, 0, 1, 1, 0, 1, 1, 1, 1},
+  //     {1, 1, 1, 0, 1, 0, 1, 1, 1, 1},
+  // };
+
+  auto res = updateMatrix(grid);
+  // std::cout << "res:" << res << std::endl;
 
   // 遍历1维数组
   // for (auto ele : res)
@@ -321,15 +290,15 @@ int main()
   // std::cout << std::endl;
 
   // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //     for (auto element : ele)
-  //     {
-  //         std::cout << element << ",";
-  //     }
-  //     std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+  for (vector<int> ele : res)
+  {
+    for (auto element : ele)
+    {
+      std::cout << element << ",";
+    }
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
 
   return 0;
 }
