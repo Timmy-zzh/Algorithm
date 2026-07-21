@@ -71,82 +71,82 @@ graph[i][j] != i
 
 void helper(vector<vector<int>> &graph, vector<vector<int>> &resPaths, int n, vector<int> &path, int i)
 {
-  if (i == n - 1)
-  {
-    vector<int> newPath(path);
-    resPaths.push_back(newPath);
-    return;
-  }
+    if (i == n - 1)
+    {
+        vector<int> newPath(path);
+        resPaths.push_back(newPath);
+        return;
+    }
 
-  vector<int> linkNodes = graph[i];
+    vector<int> linkNodes = graph[i];
 
-  // 遍历map
-  // std::cout << i << " ---> " << std::endl;
-  // for (auto ele : linkNodes)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历map
+    // std::cout << i << " ---> " << std::endl;
+    // for (auto ele : linkNodes)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // std::cout << i << " path ---> " << std::endl;
-  // for (auto ele : path)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // std::cout << i << " path ---> " << std::endl;
+    // for (auto ele : path)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  for (auto node : linkNodes)
-  {
-    path.push_back(node);
-    helper(graph, resPaths, n, path, node);
-    path.pop_back();
-  }
+    for (auto node : linkNodes)
+    {
+        path.push_back(node);
+        helper(graph, resPaths, n, path, node);
+        path.pop_back();
+    }
 }
 
 vector<vector<int>> allPathsSourceTarget(vector<vector<int>> &graph)
 {
-  vector<vector<int>> resPaths;
-  vector<int> path{0};
-  int n = graph.size();
+    vector<vector<int>> resPaths;
+    vector<int> path{0};
+    int n = graph.size();
 
-  helper(graph, resPaths, n, path, 0);
+    helper(graph, resPaths, n, path, 0);
 
-  return resPaths;
+    return resPaths;
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
+    std::cout << "《剑指》" << std::endl;
 
-  vector<vector<int>> graph = {
-      {1, 2},
-      {3},
-      {3},
-      {},
-  };
-  // vector<string> wordList = {"0201", "0101", "0102", "1212", "2002"};
-  // vector<string> wordList = {"8888"};
+    vector<vector<int>> graph = {
+        {1, 2},
+        {3},
+        {3},
+        {},
+    };
+    // vector<string> wordList = {"0201", "0101", "0102", "1212", "2002"};
+    // vector<string> wordList = {"8888"};
 
-  auto res = allPathsSourceTarget(graph);
-  // std::cout << "res:" << res << std::endl;
+    auto res = allPathsSourceTarget(graph);
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  for (vector<int> ele : res)
-  {
-    for (auto element : ele)
+    // 遍历2维数组
+    for (vector<int> ele : res)
     {
-      std::cout << element << ",";
+        for (auto element : ele)
+        {
+            std::cout << element << ",";
+        }
+        std::cout << std::endl;
     }
     std::cout << std::endl;
-  }
-  std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
