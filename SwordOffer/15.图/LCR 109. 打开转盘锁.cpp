@@ -79,141 +79,141 @@ target 和 deadends[i] 仅由若干位数字组成
  */
 vector<string> getNearNodes(const string &node)
 {
-  vector<string> nearNodes;
-  for (int i = 0; i < node.length(); i++)
-  {
-    char ch = node[i];
-    // 将char转成int类型
-    int number = ch - '0';
-
-    if (number == 0)
+    vector<string> nearNodes;
+    for (int i = 0; i < node.length(); i++)
     {
-      string temp = node;
-      temp[i] = '1';
-      nearNodes.push_back(temp);
+        char ch = node[i];
+        // 将char转成int类型
+        int number = ch - '0';
 
-      string temp2 = node;
-      temp2[i] = '9';
-      nearNodes.push_back(temp2);
+        if (number == 0)
+        {
+            string temp = node;
+            temp[i] = '1';
+            nearNodes.push_back(temp);
+
+            string temp2 = node;
+            temp2[i] = '9';
+            nearNodes.push_back(temp2);
+        }
+        else if (number == 9)
+        {
+            string temp = node;
+            temp[i] = '0';
+            nearNodes.push_back(temp);
+
+            string temp2 = node;
+            temp2[i] = '8';
+            nearNodes.push_back(temp2);
+        }
+        else
+        {
+            string temp = node;
+            temp[i] = ch + 1;
+            nearNodes.push_back(temp);
+
+            string temp2 = node;
+            temp2[i] = ch - 1;
+            nearNodes.push_back(temp2);
+        }
     }
-    else if (number == 9)
-    {
-      string temp = node;
-      temp[i] = '0';
-      nearNodes.push_back(temp);
 
-      string temp2 = node;
-      temp2[i] = '8';
-      nearNodes.push_back(temp2);
-    }
-    else
-    {
-      string temp = node;
-      temp[i] = ch + 1;
-      nearNodes.push_back(temp);
-
-      string temp2 = node;
-      temp2[i] = ch - 1;
-      nearNodes.push_back(temp2);
-    }
-  }
-
-  return nearNodes;
+    return nearNodes;
 }
 
 int openLock(vector<string> &deadends, string target)
 {
-  const string start = "0000";
-  if (std::find(deadends.begin(), deadends.end(), start) != deadends.end()) // 开始节点为死锁状态
-  {
-    return -1;
-  }
-
-  queue<string> queue;
-  queue.push(start);
-  int size = 1;
-  int distance = 0;
-  vector<string> visited; // 已经遍历过的节点
-  visited.push_back(start);
-
-  while (!queue.empty())
-  {
-    string node = queue.front();
-    queue.pop();
-
-    if (node == target)
+    const string start = "0000";
+    if (std::find(deadends.begin(), deadends.end(), start) != deadends.end()) // 开始节点为死锁状态
     {
-      return distance;
+        return -1;
     }
 
-    // 根据当前遍历到的节点node，查找周围的节点
-    vector<string> nearNodes = getNearNodes(node);
+    queue<string> queue;
+    queue.push(start);
+    int size = 1;
+    int distance = 0;
+    vector<string> visited; // 已经遍历过的节点
+    visited.push_back(start);
 
-    // 遍历map
-    std::cout << node << " ---> " << std::endl;
-    for (auto ele : nearNodes)
+    while (!queue.empty())
     {
-      std::cout << ele << ",";
+        string node = queue.front();
+        queue.pop();
+
+        if (node == target)
+        {
+            return distance;
+        }
+
+        // 根据当前遍历到的节点node，查找周围的节点
+        vector<string> nearNodes = getNearNodes(node);
+
+        // 遍历map
+        std::cout << node << " ---> " << std::endl;
+        for (auto ele : nearNodes)
+        {
+            std::cout << ele << ",";
+        }
+        std::cout << std::endl;
+
+        for (auto nearNode : nearNodes)
+        {
+            if (std::find(visited.begin(), visited.end(), nearNode) != visited.end()) // 已经遍历过了
+            {
+                continue;
+            }
+
+            // 还要避开死锁状态值
+            if (std::find(deadends.begin(), deadends.end(), nearNode) != deadends.end())
+            {
+                continue;
+            }
+
+            queue.push(nearNode);
+            visited.push_back(nearNode);
+        }
+
+        size--;
+        if (size == 0)
+        {
+            distance++;
+            size = queue.size();
+        }
     }
-    std::cout << std::endl;
 
-    for (auto nearNode : nearNodes)
-    {
-      if (std::find(visited.begin(), visited.end(), nearNode) != visited.end()) // 已经遍历过了
-      {
-        continue;
-      }
-
-      // 还要避开死锁状态值
-      if (std::find(deadends.begin(), deadends.end(), nearNode) != deadends.end())
-      {
-        continue;
-      }
-
-      queue.push(nearNode);
-      visited.push_back(nearNode);
-    }
-
-    size--;
-    if (size == 0)
-    {
-      distance++;
-      size = queue.size();
-    }
-  }
-
-  return 0;
+    return 0;
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
+    std::cout << "《剑指》" << std::endl;
 
-  vector<string> wordList = {"8887", "8889", "8878", "8898", "8788", "8988", "7888", "9888"};
-  // vector<string> wordList = {"0201", "0101", "0102", "1212", "2002"};
-  // vector<string> wordList = {"8888"};
+    vector<string> wordList = {"8887", "8889", "8878", "8898", "8788", "8988", "7888", "9888"};
+    // vector<string> wordList = {"0201", "0101", "0102", "1212", "2002"};
+    // vector<string> wordList = {"8888"};
 
-  auto res = openLock(wordList, "8888");
+    auto res = openLock(wordList, "8888");
 
-  std::cout << "res:" << res << std::endl;
+    std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //   for (auto element : ele)
-  //   {
-  //     std::cout << element << ",";
-  //   }
-  //   std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //   for (auto element : ele)
+    //   {
+    //     std::cout << element << ",";
+    //   }
+    //   std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
