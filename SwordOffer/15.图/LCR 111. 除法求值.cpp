@@ -77,154 +77,154 @@ Ai, Bi, Cj, Dj 由小写英文字母与数字组成
 vector<pair<string, double>> getLinkNodes(vector<vector<string>> &equations, vector<double> &values, const string &start)
 {
 
-  vector<pair<string, double>> linkNodes;
+    vector<pair<string, double>> linkNodes;
 
-  for (int i = 0; i < equations.size(); i++)
-  {
-
-    vector<string> equation = equations[i];
-
-    if (equation[0] == start) // 第一位元素等于start
+    for (int i = 0; i < equations.size(); i++)
     {
-      linkNodes.push_back({equation[1], values[i]});
-    }
-    else if (equation[1] == start)
-    {
-      // 第二位元素等于start，valus值为倒数了
-      linkNodes.push_back({equation[0], 1 / values[i]});
-    }
-  }
 
-  return linkNodes;
+        vector<string> equation = equations[i];
+
+        if (equation[0] == start) // 第一位元素等于start
+        {
+            linkNodes.push_back({equation[1], values[i]});
+        }
+        else if (equation[1] == start)
+        {
+            // 第二位元素等于start，valus值为倒数了
+            linkNodes.push_back({equation[0], 1 / values[i]});
+        }
+    }
+
+    return linkNodes;
 }
 
 double dfs(vector<vector<string>> &equations, vector<double> &values, vector<string> &visited,
            const string &start, const string &end, double itemValue)
 {
 
-  std::cout << "dfs --- start:" << start << " ,end:" << end << std::endl;
-  if (end == start)
-  {
-    return itemValue;
-  }
+    std::cout << "dfs --- start:" << start << " ,end:" << end << std::endl;
+    if (end == start)
+    {
+        return itemValue;
+    }
 
-  // 根据start查找与之关联的下一个节点
-  vector<pair<string, double>> linkNodes = getLinkNodes(equations, values, start);
-  std::cout << "dfs --- start:" << start << " ,getLinkNodes === :" << std::endl;
-  for (auto ele : linkNodes)
-  {
-    std::cout << "first:" << ele.first << " ,secode:" << ele.second;
+    // 根据start查找与之关联的下一个节点
+    vector<pair<string, double>> linkNodes = getLinkNodes(equations, values, start);
+    std::cout << "dfs --- start:" << start << " ,getLinkNodes === :" << std::endl;
+    for (auto ele : linkNodes)
+    {
+        std::cout << "first:" << ele.first << " ,secode:" << ele.second;
+        std::cout << std::endl;
+    }
     std::cout << std::endl;
-  }
-  std::cout << std::endl;
 
-  // 遍历，计算itemVlaue值
-  for (const auto &node : linkNodes)
-  {
-    if (std::find(visited.begin(), visited.end(), node.first) != visited.end()) // 遍历过，不处理
+    // 遍历，计算itemVlaue值
+    for (const auto &node : linkNodes)
     {
-      continue;
-    }
-    visited.push_back(node.first);
+        if (std::find(visited.begin(), visited.end(), node.first) != visited.end()) // 遍历过，不处理
+        {
+            continue;
+        }
+        visited.push_back(node.first);
 
-    itemValue = itemValue * node.second;
-    double res = dfs(equations, values, visited, node.first, end, itemValue);
-    if (res != -1.0)
-    {
-      return res; // 找到了，直接返回
+        itemValue = itemValue * node.second;
+        double res = dfs(equations, values, visited, node.first, end, itemValue);
+        if (res != -1.0)
+        {
+            return res; // 找到了，直接返回
+        }
+        itemValue = itemValue / node.second;
     }
-    itemValue = itemValue / node.second;
-  }
 
-  return -1.0;
+    return -1.0;
 }
 
 vector<double> calcEquation(vector<vector<string>> &equations, vector<double> &values, vector<vector<string>> &queries)
 {
-  std::cout << "calcEquation:" << std::endl;
+    std::cout << "calcEquation:" << std::endl;
 
-  vector<string> onlyWords;
-  for (auto &equation : equations)
-  {
-    for (auto &word : equation)
+    vector<string> onlyWords;
+    for (auto &equation : equations)
     {
-      if (std::find(onlyWords.begin(), onlyWords.end(), word) == onlyWords.end()) // 集合中没有，则添加到集合中去
-      {
-        onlyWords.push_back(word);
-      }
+        for (auto &word : equation)
+        {
+            if (std::find(onlyWords.begin(), onlyWords.end(), word) == onlyWords.end()) // 集合中没有，则添加到集合中去
+            {
+                onlyWords.push_back(word);
+            }
+        }
     }
-  }
 
-  vector<double> resArr;
-  vector<string> visited; // 记录已经遍历过的单词
+    vector<double> resArr;
+    vector<string> visited; // 记录已经遍历过的单词
 
-  for (auto &querie : queries)
-  {
-    // 判断数组元素中，两个单词字符串是否在集合中
-    if (std::find(onlyWords.begin(), onlyWords.end(), querie[0]) == onlyWords.end() ||
-        std::find(onlyWords.begin(), onlyWords.end(), querie[1]) == onlyWords.end()) // 集合中没有
+    for (auto &querie : queries)
     {
-      resArr.push_back(-1.0);
-      continue;
+        // 判断数组元素中，两个单词字符串是否在集合中
+        if (std::find(onlyWords.begin(), onlyWords.end(), querie[0]) == onlyWords.end() ||
+            std::find(onlyWords.begin(), onlyWords.end(), querie[1]) == onlyWords.end()) // 集合中没有
+        {
+            resArr.push_back(-1.0);
+            continue;
+        }
+        visited.push_back(querie[0]);
+        double itemValue = dfs(equations, values, visited, querie[0], querie[1], 1.0);
+        resArr.push_back(itemValue);
+        visited.clear();
     }
-    visited.push_back(querie[0]);
-    double itemValue = dfs(equations, values, visited, querie[0], querie[1], 1.0);
-    resArr.push_back(itemValue);
-    visited.clear();
-  }
 
-  return resArr;
+    return resArr;
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
+    std::cout << "《剑指》" << std::endl;
 
-  vector<vector<int>> graph = {
-      {1, 2},
-      {3},
-      {3},
-      {},
-  };
+    vector<vector<int>> graph = {
+        {1, 2},
+        {3},
+        {3},
+        {},
+    };
 
-  /**
-   * 示例 1：
-输入：equations = [["a","b"],["b","c"]], values = [2.0,3.0], queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
-输出：[6.00000,0.50000,-1.00000,1.00000,-1.00000]
-解释：
-条件：a / b = 2.0, b / c = 3.0
-问题：a / c = ?, b / a = ?, a / e = ?, a / a = ?, x / x = ?
-结果：[6.0, 0.5, -1.0, 1.0, -1.0 ]
-   */
+    /**
+     * 示例 1：
+  输入：equations = [["a","b"],["b","c"]], values = [2.0,3.0], queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
+  输出：[6.00000,0.50000,-1.00000,1.00000,-1.00000]
+  解释：
+  条件：a / b = 2.0, b / c = 3.0
+  问题：a / c = ?, b / a = ?, a / e = ?, a / a = ?, x / x = ?
+  结果：[6.0, 0.5, -1.0, 1.0, -1.0 ]
+     */
 
-  // vector<string> wordList = {"0201", "0101", "0102", "1212", "2002"};
-  // vector<string> wordList = {"8888"};
+    // vector<string> wordList = {"0201", "0101", "0102", "1212", "2002"};
+    // vector<string> wordList = {"8888"};
 
-  // vector<double> calcEquation(vector<vector<string>> &equations, vector<double> &values, vector<vector<string>> &queries)
+    // vector<double> calcEquation(vector<vector<string>> &equations, vector<double> &values, vector<vector<string>> &queries)
 
-  vector<vector<string>> equations = {{"a", "b"}, {"b", "c"}};
-  vector<double> values = {2.0, 3.0};
-  vector<vector<string>> queries = {{"a", "c"}, {"b", "a"}, {"a", "e"}, {"a", "a"}, {"x", "x"}};
-  auto res = calcEquation(equations, values, queries);
-  // std::cout << "res:" << res << std::endl;
+    vector<vector<string>> equations = {{"a", "b"}, {"b", "c"}};
+    vector<double> values = {2.0, 3.0};
+    vector<vector<string>> queries = {{"a", "c"}, {"b", "a"}, {"a", "e"}, {"a", "a"}, {"x", "x"}};
+    auto res = calcEquation(equations, values, queries);
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  for (auto ele : res)
-  {
-    std::cout << ele << ",";
-  }
-  std::cout << std::endl;
+    // 遍历1维数组
+    for (auto ele : res)
+    {
+        std::cout << ele << ",";
+    }
+    std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //   for (auto element : ele)
-  //   {
-  //     std::cout << element << ",";
-  //   }
-  //   std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //   for (auto element : ele)
+    //   {
+    //     std::cout << element << ",";
+    //   }
+    //   std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
