@@ -58,8 +58,65 @@ prerequisites[i].length == 2
 ai != bi
 prerequisites 中不存在重复元素
  */
+
+/**
+ * 1、审题：现在一共有n门需要学习的课程，和两门课程之前学习的顺序组合关系数组 prerequieites,内部的单个元素是一个数组：数组内有两门课程标记先要修后面课程，才能修前面课程
+ * - 问根据学习课程的顺序关系，得出一个可以课程学习的序列
+ * 2、解题：拓扑排序算法
+ * - 先将每门课程的入度和出度找出来，先找出所有入度为0的课程，放到队列中，去除这个课程，然后找出他指向的课程
+ * - 对应指向课程的入度减少1，然后判断入度减少的课程的入度是否等于0，等于0的话需要放到队列中去
+ * - 使用一个大小为n的vector数组保存每门课程对应的入度，再从中选出入度为0的课程，放到队列queue中去
+ * - 然后while遍历，从队列中不断取出入度为0的课程，再通过prerequisites课程关系数组，找出存在依赖的课程，存在依赖关系的课程的入度对应减少1，并判断入度是否为0
+ * - 将入度为0的新的课程添加到队列中去，直到队列为空
+ * - 将所有出队列的课程添加到一个集合中并返回
+ */
 vector<int> findOrder(int numCourses, vector<vector<int>> &prerequisites)
 {
+
+  vector<int> resArr;
+  // 课程对应入度的数组
+  vector<int> inputArr(numCourses, 0);
+
+  // 遍历 prerequisites 找出课程对应的入度
+  for (auto item : prerequisites)
+  {
+    inputArr[item[0]]++;
+  }
+
+  // 遍历inputArr，找到入度为0的课程，放到队列中去
+  queue<int> queue;
+  for (int course = 0; course < numCourses; course++)
+  {
+    if (inputArr[course] == 0)
+    {
+      queue.push(course);
+    }
+  }
+
+  while (!queue.empty())
+  {
+    auto node = queue.front();
+    queue.pop();
+    resArr.push_back(node);
+
+    // 遍历 prerequisites ，找到与之存在关系的课程
+    for (auto item : prerequisites)
+    {
+      if (node == item[1])
+      {
+        // 他的入度要减少
+        inputArr[item[0]]--;
+
+        // 减少一个入度后，判断入度是否为0
+        if (inputArr[item[0]] == 0)
+        {
+          queue.push(item[0]);
+        }
+      }
+    }
+  }
+
+  return resArr.size() == numCourses ? resArr : vector<int>();
 }
 
 int main()
@@ -74,13 +131,8 @@ int main()
   };
 
   /**
-   * 示例 1：
-输入：equations = [["a","b"],["b","c"]], values = [2.0,3.0], queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
-输出：[6.00000,0.50000,-1.00000,1.00000,-1.00000]
-解释：
-条件：a / b = 2.0, b / c = 3.0
-问题：a / c = ?, b / a = ?, a / e = ?, a / a = ?, x / x = ?
-结果：[6.0, 0.5, -1.0, 1.0, -1.0 ]
+输入: numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]
+输出: [0,1,2,3] or [0,2,1,3]
    */
 
   // vector<string> wordList = {"0201", "0101", "0102", "1212", "2002"};
@@ -88,20 +140,21 @@ int main()
 
   // vector<double> calcEquation(vector<vector<string>> &equations, vector<double> &values, vector<vector<string>> &queries)
 
-  vector<vector<int>> matri = {
-      {9, 9, 4},
-      {6, 6, 8},
-      {2, 1, 1},
+  vector<vector<int>> prerequisites = {
+      {1, 0},
+      {2, 0},
+      {3, 1},
+      {3, 2},
   };
-  // auto res = longestIncreasingPath(matri);
+  auto res = findOrder(4, prerequisites);
   // std::cout << "res:" << res << std::endl;
 
   // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+  for (auto ele : res)
+  {
+    std::cout << ele << ",";
+  }
+  std::cout << std::endl;
 
   // 遍历2维数组
   // for (vector<int> ele : res)
