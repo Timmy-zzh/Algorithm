@@ -26,135 +26,212 @@
 using namespace std;
 
 /**
-LCR 113. 课程表 II
-https://leetcode.cn/problems/QA2IGt/description/
+LCR 114. 火星词典
+https://leetcode.cn/problems/Jf1JuT/description/
 
-现在总共有 numCourses 门课需要选，记为 0 到 numCourses-1。
-给定一个数组 prerequisites ，它的每一个元素 prerequisites[i] 表示两门课程之间的先修顺序。
-例如 prerequisites[i] = [ai, bi] 表示想要学习课程 ai ，需要先完成课程 bi 。
-请根据给出的总课程数  numCourses 和表示先修顺序的 prerequisites 得出一个可行的修课序列。
-可能会有多个正确的顺序，只要任意返回一种就可以了。如果不可能完成所有课程，返回一个空数组。
+现有一种使用英语字母的外星文语言，这门语言的字母顺序与英语顺序不同。
+给定一个字符串列表 words ，作为这门语言的词典，words 中的字符串已经 按这门新语言的字母顺序进行了排序 。
+请你根据该词典还原出此语言中已知的字母顺序，并 按字母递增顺序 排列。若不存在合法字母顺序，返回 "" 。若存在多种可能的合法字母顺序，返回其中 任意一种 顺序即可。
+字符串 s 字典顺序小于 字符串 t 有两种情况：
+在第一个不同字母处，如果 s 中的字母在这门外星语言的字母顺序中位于 t 中字母之前，那么 s 的字典顺序小于 t 。
+如果前面 min(s.length, t.length) 字母都相同，那么 s.length < t.length 时，s 的字典顺序也小于 t 。
 
 示例 1：
-输入: numCourses = 2, prerequisites = [[1,0]]
-输出: [0,1]
-解释: 总共有 2 门课程。要学习课程 1，你需要先完成课程 0。因此，正确的课程顺序为 [0,1]。
+输入：words = ["wrt","wrf","er","ett","rftt"]
+输出："wertf"
 
 示例 2：
-输入: numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]
-输出: [0,1,2,3] or [0,2,1,3]
-解释: 总共有 4 门课程。要学习课程 3，你应该先完成课程 1 和课程 2。并且课程 1 和课程 2 都应该排在课程 0 之后。因此，一个正确的课程顺序是 [0,1,2,3]。另一个正确的排序是 [0,2,1,3]。
+输入：words = ["z","x"]
+输出："zx"
 
 示例 3：
-输入: numCourses = 1, prerequisites = []
-输出: [0]
-解释: 总共 1 门课，直接修第一门课就可。
+输入：words = ["z","x","z"]
+输出：""
+解释：不存在合法字母顺序，因此返回 ""。
 
 提示：
-1 <= numCourses <= 2000
-0 <= prerequisites.length <= numCourses * (numCourses - 1)
-prerequisites[i].length == 2
-0 <= ai, bi < numCourses
-ai != bi
-prerequisites 中不存在重复元素
+1 <= words.length <= 100
+1 <= words[i].length <= 100
+words[i] 仅由小写英文字母组成
  */
 
 /**
- * 1、审题：现在一共有n门需要学习的课程，和两门课程之前学习的顺序组合关系数组 prerequieites,内部的单个元素是一个数组：数组内有两门课程标记先要修后面课程，才能修前面课程
- * - 问根据学习课程的顺序关系，得出一个可以课程学习的序列
+ * 1、审题：输入一个单词数组，数组中的每个单词都是已经排好序的列表，和我们平常使用的字母排序不一样，他有自己的规则，现在要求根据已有的字符串排序，
+ * - 找出所有字母正确的排序顺序并输出
  * 2、解题：拓扑排序算法
- * - 先将每门课程的入度和出度找出来，先找出所有入度为0的课程，放到队列中，去除这个课程，然后找出他指向的课程
- * - 对应指向课程的入度减少1，然后判断入度减少的课程的入度是否等于0，等于0的话需要放到队列中去
- * - 使用一个大小为n的vector数组保存每门课程对应的入度，再从中选出入度为0的课程，放到队列queue中去
- * - 然后while遍历，从队列中不断取出入度为0的课程，再通过prerequisites课程关系数组，找出存在依赖的课程，存在依赖关系的课程的入度对应减少1，并判断入度是否为0
- * - 将入度为0的新的课程添加到队列中去，直到队列为空
- * - 将所有出队列的课程添加到一个集合中并返回
+ * - 可以根据提供的字符串数组，在遍历的时候，两两进行比对，找到前后两个字母的前后顺序关系，如果发现前面的字母相同，则顺序查找后面不同的字母，
+ * - 这样就得到了所有字母，其中两个字母两两之间的依赖关系，根据这个前后顺序关系，可以进行拓扑排序算法，根据入度，出度关系找出他们的顺序结果
+ * - 上面的步骤，只要找到两个字母的前后顺序关系，就可以将问题转换到113的课程表的问题。
  */
-vector<int> findOrder(int numCourses, vector<vector<int>> &prerequisites)
+
+bool startsWith(const std::string &str, const std::string &prefix)
 {
+  return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
+}
 
-  vector<int> resArr;
-  // 课程对应入度的数组
-  vector<int> inputArr(numCourses, 0);
-
-  // 遍历 prerequisites 找出课程对应的入度
-  for (auto item : prerequisites)
+string alienOrder(vector<string> &words)
+{
+  for (auto ele : words)
   {
-    inputArr[item[0]]++;
+    std::cout << ele << ",";
   }
+  std::cout << std::endl;
+  // 根据words字符串列表，找到相邻字符中两个字母的先后顺序，然后保存到集合中去
+  std::map<char, int> inDegrees; // 每个字母对应的入度
+  vector<vector<char>> chRules;
 
-  // 遍历inputArr，找到入度为0的课程，放到队列中去
-  queue<int> queue;
-  for (int course = 0; course < numCourses; course++)
+  // 先给每个字母设置入度=0
+  for (int i = 0; i < words.size(); i++)
   {
-    if (inputArr[course] == 0)
+    string str1 = words[i];
+
+    for (int j = 0; j < str1.length(); j++)
     {
-      queue.push(course);
+      char ch1 = str1[j];
+      inDegrees[ch1] = 0;
     }
   }
 
+  // 找到相邻字母之间的相互关系
+  for (int i = 0; i < words.size() - 1; i++)
+  {
+    string str1 = words[i];
+    string str2 = words[i + 1];
+
+    if (startsWith(str1, str2) && str1 != str2)
+    {
+      std::cout << str1 << " === str1.find(str2) ==> " << str2 << std::endl;
+      return "";
+    }
+
+    for (int j = 0; j < str1.length() && j < str2.length(); j++)
+    {
+      char ch1 = str1[j];
+      char ch2 = str2[j];
+      if (ch1 != ch2)
+      {
+        std::cout << str1 << " =====> " << str2 << " ,i:" << i << " ,j:" << j << std::endl;
+        std::cout << ch1 << " =====> " << ch2 << std::endl;
+        // 不等于，则 str1 中的字母顺序 小于 str2中的字母
+        chRules.push_back({ch1, ch2});
+        break;
+      }
+    }
+  }
+
+  // 根据字母先后关系，求出每个字母对应的入度 chRules
+  for (auto rule : chRules)
+  {
+    char ch1 = rule[0];
+    char ch2 = rule[1];
+
+    if (inDegrees.find(ch2) != inDegrees.end())
+    {
+      inDegrees[ch2]++;
+    }
+    else
+    {
+      inDegrees[ch2] = 1;
+    }
+  }
+
+  // 遍历1维数组
+  for (auto ele : chRules)
+  {
+    std::cout << ele[0] << " --> " << ele[1];
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+
+  std::cout << "inDegrees ====== " << std::endl;
+  for (auto ele : inDegrees)
+  {
+    std::cout << ele.first << " ---- " << ele.second;
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+
+  // 找到所有入度为0的字母，保存到队列queue中
+  queue<char> queue;
+  string resStr;
+
+  for (auto &it : inDegrees)
+  {
+    if (it.second == 0)
+    {
+      queue.push(it.first);
+    }
+  }
+
+  // 根据上面的两个数据，再使用while循环将队列中的字母数组取出来，进行拓扑排序
   while (!queue.empty())
   {
     auto node = queue.front();
     queue.pop();
-    resArr.push_back(node);
 
-    // 遍历 prerequisites ，找到与之存在关系的课程
-    for (auto item : prerequisites)
+    resStr += node;
+
+    // 遍历 chRules ，找到 node指向的下一个字母
+
+    for (auto rule : chRules)
     {
-      if (node == item[1])
-      {
-        // 他的入度要减少
-        inputArr[item[0]]--;
+      char ch1 = rule[0];
+      char ch2 = rule[1];
 
-        // 减少一个入度后，判断入度是否为0
-        if (inputArr[item[0]] == 0)
+      if (ch1 == node)
+      {
+        inDegrees[ch2]--;
+        if (inDegrees[ch2] == 0)
         {
-          queue.push(item[0]);
+          queue.push(ch2);
         }
       }
     }
   }
 
-  return resArr.size() == numCourses ? resArr : vector<int>();
+  return resStr.length() == inDegrees.size() ? resStr : "";
 }
 
 int main()
 {
   std::cout << "《剑指》" << std::endl;
 
-  vector<vector<int>> graph = {
-      {1, 2},
-      {3},
-      {3},
-      {},
-  };
+  // vector<vector<int>> graph = {
+  //     {1, 2},
+  //     {3},
+  //     {3},
+  //     {},
+  // };
 
   /**
 输入: numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]
 输出: [0,1,2,3] or [0,2,1,3]
    */
 
-  // vector<string> wordList = {"0201", "0101", "0102", "1212", "2002"};
-  // vector<string> wordList = {"8888"};
+  // vector<string> words = {"wrt", "wrf", "er", "ett", "rftt"};
+  // vector<string> words = {"z", "x", "z"};
+  // vector<string> words = {"z", "z"};
+  // vector<string> words = {"zy", "zx"};
+  // vector<string> words = {"wrt", "wrtkj"};
+  vector<string> words = {"ac", "ab", "b"};
 
   // vector<double> calcEquation(vector<vector<string>> &equations, vector<double> &values, vector<vector<string>> &queries)
 
-  vector<vector<int>> prerequisites = {
-      {1, 0},
-      {2, 0},
-      {3, 1},
-      {3, 2},
-  };
-  auto res = findOrder(4, prerequisites);
-  // std::cout << "res:" << res << std::endl;
+  // vector<vector<int>> prerequisites = {
+  //     {1, 0},
+  //     {2, 0},
+  //     {3, 1},
+  //     {3, 2},
+  // };
+  auto res = alienOrder(words);
+  std::cout << "res:" << res << std::endl;
 
   // 遍历1维数组
-  for (auto ele : res)
-  {
-    std::cout << ele << ",";
-  }
-  std::cout << std::endl;
+  // for (auto ele : res)
+  // {
+  //   std::cout << ele << ",";
+  // }
+  // std::cout << std::endl;
 
   // 遍历2维数组
   // for (vector<int> ele : res)
