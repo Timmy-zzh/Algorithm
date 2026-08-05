@@ -26,195 +26,86 @@
 using namespace std;
 
 /**
-LCR 115. 序列重建
-https://leetcode.cn/problems/ur2n8P/description/
+LCR 116. 省份数量
+https://leetcode.cn/problems/bLyHh0/description/
 
-给定一个长度为 n 的整数数组 nums ，其中 nums 是范围为 [1，n] 的整数的排列。还提供了一个 2D 整数数组 sequences ，其中 sequences[i] 是 nums 的子序列。
-检查 nums 是否是唯一的最短 超序列 。最短 超序列 是 长度最短 的序列，并且所有序列 sequences[i] 都是它的子序列。对于给定的数组 sequences ，可能存在多个有效的 超序列 。
-
-例如，对于 sequences = [[1,2],[1,3]] ，有两个最短的 超序列 ，[1,2,3] 和 [1,3,2] 。
-而对于 sequences = [[1,2],[1,3],[1,2,3]] ，唯一可能的最短 超序列 是 [1,2,3] 。[1,2,3,4] 是可能的超序列，但不是最短的。
-如果 nums 是序列的唯一最短 超序列 ，则返回 true ，否则返回 false 。
-子序列 是一个可以通过从另一个序列中删除一些元素或不删除任何元素，而不改变其余元素的顺序的序列。
+有 n 个城市，其中一些彼此相连，另一些没有相连。如果城市 a 与城市 b 直接相连，且城市 b 与城市 c 直接相连，那么城市 a 与城市 c 间接相连。
+省份 是一组直接或间接相连的城市，组内不含其他没有相连的城市。
+给你一个 n x n 的矩阵 isConnected ，其中 isConnected[i][j] = 1 表示第 i 个城市和第 j 个城市直接相连，而 isConnected[i][j] = 0 表示二者不直接相连。
+返回矩阵中 省份 的数量。
 
 示例 1：
-输入：nums = [1,2,3], sequences = [[1,2],[1,3]]
-输出：false
-解释：有两种可能的超序列：[1,2,3]和[1,3,2]。
-序列 [1,2] 是[1,2,3]和[1,3,2]的子序列。
-序列 [1,3] 是[1,2,3]和[1,3,2]的子序列。
-因为 nums 不是唯一最短的超序列，所以返回false。
+输入：isConnected = [[1,1,0],[1,1,0],[0,0,1]]
+输出：2
 
 示例 2：
-输入：nums = [1,2,3], sequences = [[1,2]]
-输出：false
-解释：最短可能的超序列为 [1,2]。
-序列 [1,2] 是它的子序列：[1,2]。
-因为 nums 不是最短的超序列，所以返回false。
-
-示例 3：
-输入：nums = [1,2,3], sequences = [[1,2],[1,3],[2,3]]
-输出：true
-解释：最短可能的超序列为[1,2,3]。
-序列 [1,2] 是它的一个子序列：[1,2,3]。
-序列 [1,3] 是它的一个子序列：[1,2,3]。
-序列 [2,3] 是它的一个子序列：[1,2,3]。
-因为 nums 是唯一最短的超序列，所以返回true。
+输入：isConnected = [[1,0,0],[0,1,0],[0,0,1]]
+输出：3
 
 提示：
-n == nums.length
-1 <= n <= 104
-nums 是 [1, n] 范围内所有整数的排列
-1 <= sequences.length <= 104
-1 <= sequences[i].length <= 104
-1 <= sum(sequences[i].length) <= 105
-1 <= sequences[i][j] <= n
-sequences 的所有数组都是 唯一 的
-sequences[i] 是 nums 的一个子序列
+1 <= n <= 200
+n == isConnected.length
+n == isConnected[i].length
+isConnected[i][j] 为 1 或 0
+isConnected[i][i] == 1
+isConnected[i][j] == isConnected[j][i]
  */
 
 /**
- * 1、审题：输入一个整数数组nums，和一个二维数组 sequences,现在要判断sequences中的每个元素，也就是单个数组都是nums的子序列
- * - 也就是按照nums的部分有序的序列元素可以组成 sequences 中的数组元素，问nums满足二维数组中元素的序列的条件时，是否最短
- * 2、解题： 之前都是根据零散的元素，来找关系（路径），现在是知道了他们的关系，求提供的路径是否是最短的
- * - 还是用拓扑排序算法，根据 sequences 求所有数组满足条件的拓扑关系，而且是一个一个的单向关系节点连接起来的拓扑关系
- * - 把求到的拓扑关系和题目给出的nums长度做比较，
- * - 遍历 sequences， 内层for循环遍历其中的单个数组，根据数组中元素的前后顺序关系，去查找他们的关系，使用map<int,vecotr<int>> 保存节点之前的有向图的关系
- * - 然后根据有向图，求他们的入度，然后根据有向图和入度，求他们的拓扑序列结果，
- * - 求他的拓扑序列结果是否只有一个，且最短的那个和题目提供的nums是否相同，并将结果返回
+ * 1、审题：输入一个二维数组，数组中的元素为0或者1, arr[i][j] = 1,表示城市i和城市标记j之前相连，如果arr[i][j]=0;说明两个城市之间不相连
+ * - 相连的城市属于同一个省份，不相连的说明不在同一个省份，现在要求提供的这些城市，一共有属于几个省份，并返回省份个数
+ * 2、解题：使用图的广度搜索算法
+ * - 使用n*n的 vector<bool>[n][n] visited 的数组表示哪些城市被访问过了，从城市0开始遍历，放到队列中去，并找到与城市0相连接的其他城市，也放到队列中去，他们都是属于同一个省份
+ * - 遍历过的城市在数组visited中的值变为true，
+ * - 从原始数组中获取一个城市，如果他之前没有遍历过，则返回1，表示他是一个新的省份，并需要将属于该省份的所有城市都进行标记
+ * - 直到所有城市都标记完成
  */
-bool sequenceReconstruction(vector<int> &nums, vector<vector<int>> &sequences)
+void bfs(vector<vector<int>> &isConnected, vector<bool> &visited, int n, int k)
 {
-  // 遍历 sequences 拿出内部的单个数组进行遍历，并且根据数组中元素的前后关系，构建当前元素指向下一个节点元素的集合，
-  std::map<int, vector<int>> map; // 当前节点key，指向下一节点的集合
-  std::map<int, int> inDegreeMap; // 入度
+  // 找到与k相连的城市
   queue<int> queue;
-  vector<int> resPath;
+  visited[k] = true;
+  queue.push(k);
 
-  for (int i = 0; i < sequences.size(); i++)
-  {
-    vector<int> items = sequences[i];
-    if (items.size() == 1)
-    {
-      // 只有一个元素
-      int prev = items[0];
-      if (map.find(prev) == map.end()) // map集合中不包含key值，则添加value值为 数组
-      {
-        vector<int> nextNodes;
-        map[prev] = nextNodes;
-      }
-      inDegreeMap[prev] = 0;
-    }
-    else
-    {
-
-      for (int j = 0; j < items.size() - 1; j++)
-      {
-        int prev = items[j];
-        int next = items[j + 1];
-        if (map.find(prev) == map.end()) // map集合中不包含key值，则添加value值为 数组
-        {
-          vector<int> nextNodes;
-          nextNodes.push_back(next);
-          map[prev] = nextNodes;
-        }
-        else
-        {
-          // 取出来再添加
-          map[prev].push_back(next);
-        }
-
-        inDegreeMap[prev] = 0;
-        inDegreeMap[next] = 0;
-      }
-    }
-  }
-
-  // 再根据元素节点间关系，构建他们的入度关系，并将入度为0的节点添加到队列中
-  for (auto it : map)
-  {
-    int key = it.first;
-    vector<int> value = it.second;
-    for (auto next : value)
-    {
-      inDegreeMap[next]++;
-    }
-  }
-
-  // 遍历1维数组
-
-  std::cout << "map +++++++++++++++ " << std::endl;
-  for (auto ele : map)
-  {
-    std::cout << ele.first << " ---- nextNodes: " << std::endl;
-    for (auto ele : ele.second)
-    {
-      std::cout << ele;
-      std::cout << std::endl;
-    }
-
-    std::cout << std::endl;
-  }
-  std::cout << std::endl;
-
-  std::cout << "inDegreeMap ============ " << std::endl;
-  for (auto ele : inDegreeMap)
-  {
-    std::cout << ele.first << " ---- " << ele.second;
-    std::cout << std::endl;
-  }
-  std::cout << std::endl;
-
-  for (auto it : inDegreeMap)
-  {
-    if (it.second == 0)
-    {
-      queue.push(it.first);
-    }
-  }
-
-  if (queue.size() != 1)
-  {
-    return false;
-  }
-
-  // 遍历队列，不断从队列中取出入度为0的节点，得到节点的集合
   while (!queue.empty())
   {
-    auto node = queue.front();
+    int node = queue.front();
     queue.pop();
-    resPath.push_back(node);
+    std::cout << " bfs  node-------:" << node << std::endl;
 
-    std::cout << "while (!queue  ---- " << node << std::endl;
-
-    // 找到node节点的下一个节点的集合，遍历他并减少他们的入度
-    vector<int> nodes = map[node];
-    for (auto neigNode : nodes)
+    for (int i = 0; i < n; i++)
     {
-      inDegreeMap[neigNode]--;
-
-      if (inDegreeMap[neigNode] == 0)
+      if (i == node || visited[i])
       {
-        queue.push(neigNode);
+        continue;
+      }
+      std::cout << " node:" << node << " ,i:" << i << " ,isConnected[k][i]:" << isConnected[node][i] << std::endl;
+      if (isConnected[node][i] == 1)
+      {
+        std::cout << " bfs  i -------:" << i << std::endl;
+        queue.push(i);
+        visited[i] = true;
       }
     }
+  }
+}
 
-    // 如何判断，当前遍历的节点是否是最后一个？
-    if (queue.size() > 1)
+int findCircleNum(vector<vector<int>> &isConnected)
+{
+  int n = isConnected.size();
+  vector<bool> visited(n, false);
+
+  int resNum = 0;
+  for (int i = 0; i < n; i++)
+  {
+    if (!visited[i])
     {
-      std::cout << "queue.size() != 1 =========== " << node << std::endl;
-      return false;
+      std::cout << " for i:" << i << std::endl;
+      bfs(isConnected, visited, n, i);
+      resNum++;
     }
   }
-  // 遍历1维数组
-  for (auto ele : resPath)
-  {
-    std::cout << ele << ",";
-  }
-  std::cout << std::endl;
-
-  // 题目要求是nums是唯一的拓扑系列，要求他的下一个节点只能有一个节点
-  return resPath.size() == nums.size();
+  return resNum;
 }
 
 int main()
@@ -250,9 +141,11 @@ int main()
   // };
 
   //  nums = [1,2,3], sequences = [[1,2],[1,3],[2,3]]
-  vector<int> nums = {1, 2, 3};
-  vector<vector<int>> sequences = {{1, 2}, {1, 3}, {2, 3}};
-  auto res = sequenceReconstruction(nums, sequences);
+  // vector<int> nums = {1, 2, 3};
+  vector<vector<int>> isConnected = {{1, 0, 0, 1}, {0, 1, 1, 0}, {0, 1, 1, 1}, {1, 0, 1, 1}};
+
+  // int findCircleNum(vector<vector<int>> &isConnected)
+  auto res = findCircleNum(isConnected);
   std::cout << "res:" << res << std::endl;
 
   // 遍历1维数组
@@ -269,6 +162,28 @@ int main()
   //   {
   //     std::cout << element << ",";
   //   }
+  //   std::cout << std::endl;
+  // }
+  // std::cout << std::endl;
+
+  // std::cout << "map +++++++++++++++ " << std::endl;
+  // for (auto ele : map)
+  // {
+  //   std::cout << ele.first << " ---- nextNodes: " << std::endl;
+  //   for (auto ele : ele.second)
+  //   {
+  //     std::cout << ele;
+  //     std::cout << std::endl;
+  //   }
+
+  //   std::cout << std::endl;
+  // }
+  // std::cout << std::endl;
+
+  // std::cout << "inDegreeMap ============ " << std::endl;
+  // for (auto ele : inDegreeMap)
+  // {
+  //   std::cout << ele.first << " ---- " << ele.second;
   //   std::cout << std::endl;
   // }
   // std::cout << std::endl;
