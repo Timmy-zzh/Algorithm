@@ -52,6 +52,82 @@ isConnected[i][j] == isConnected[j][i]
  */
 
 /**
+ * 使用并查集解法：
+ * - 并查集中只要属于一个阵营的，他的根节点都相同，跟节点的父节点是自己。
+ * - 题目中只要属于一个省份的他的根节点都相同，刚开始所有节点的根节点都是自己，
+ * - 接着遍历城市之间的链接二维矩阵，需要判断他们是否属于同一个子集中，也就是查看他们的根节点是否一样，如果一样，说明他们已经是属于同一个子集中了，就不用管了
+ * -- 如果他们相连，但是根节点还不通，则需要将新节点的根节点设置为相同的根节点，则子集的个数也需要减少1
+ * - 重点是查找节点的根节点方法，findFather，使用递归遍历，只有当父节点是自己的时候，这个节点才是根节点，不然就继续遍历他的父节点
+ * -- 查找后还需要设置他的父节点为他的根节点
+ */
+
+/**
+ * 看是否能将两个节点i，j，进行合并到一起
+ * - 先判断他们的根节点是否相同，
+ * -- 如果相同，说明已经在一个子集中了，不用再合并了，直接返回false
+ * -- 如果他们的根节点不同，说明当前他们还处于不同的子集中，但是他们又是相连的，需要合并到一块，所以需要将他们的父节点合并到一块
+ */
+
+/**
+ * 查找节点i的跟节点
+ * - 直到父节点是自己，则返回自己
+ * - 否则继续递归查找
+ */
+int findFather(vector<int> &fathers, int i)
+{
+    if (fathers[i] == i)
+    {
+        return i;
+    }
+    int fatherI = findFather(fathers, fathers[i]);
+    fathers[i] = fatherI;
+
+    return fathers[i];
+}
+
+bool merge(vector<int> &fathers, int i, int j)
+{
+    int fatherI = findFather(fathers, i);
+    int fatherJ = findFather(fathers, j);
+
+    if (fatherI == fatherJ) // 已经是属于同一个并查集中了,不用再合并
+    {
+        return false;
+    }
+
+    //  属于不同的并查集，则需要合并
+    fathers[fatherI] = fatherJ;
+    return true;
+}
+
+int findCircleNum(vector<vector<int>> &isConnected)
+{
+    int n = isConnected.size();
+    vector<int> fathers(n, 0); // 保存n个城市的父节点
+
+    for (int i = 0; i < n; i++)
+    {
+        fathers[i] = i; // 先设置为自己，每个节点的父节点都是自己
+    }
+
+    int res = n; // 当开始每个人都是单独的一个个体，还没有合并起来
+
+    // 遍历城市之间的链接关系
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i + 1; j < n; j++)
+        {
+            if (isConnected[i][j] == 1 && merge(fathers, i, j))
+            {
+                res--;
+            }
+        }
+    }
+
+    return res;
+}
+
+/**
  * 1、审题：输入一个二维数组，数组中的元素为0或者1, arr[i][j] = 1,表示城市i和城市标记j之前相连，如果arr[i][j]=0;说明两个城市之间不相连
  * - 相连的城市属于同一个省份，不相连的说明不在同一个省份，现在要求提供的这些城市，一共有属于几个省份，并返回省份个数
  * 2、解题：使用图的广度搜索算法
@@ -90,7 +166,7 @@ void bfs(vector<vector<int>> &isConnected, vector<bool> &visited, int n, int k)
     }
 }
 
-int findCircleNum(vector<vector<int>> &isConnected)
+int findCircleNum1(vector<vector<int>> &isConnected)
 {
     int n = isConnected.size();
     vector<bool> visited(n, false);
@@ -112,27 +188,10 @@ int main()
 {
     std::cout << "《剑指》" << std::endl;
 
-    // vector<vector<int>> graph = {
-    //     {1, 2},
-    //     {3},
-    //     {3},
-    //     {},
-    // };
-
-    /**
-  输入: numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]
-  输出: [0,1,2,3] or [0,2,1,3]
-     */
-
     // vector<string> words = {"wrt", "wrf", "er", "ett", "rftt"};
-    // vector<string> words = {"z", "x", "z"};
-    // vector<string> words = {"z", "z"};
-    // vector<string> words = {"zy", "zx"};
-    // vector<string> words = {"wrt", "wrtkj"};
     vector<string> words = {"ac", "ab", "b"};
 
     // vector<double> calcEquation(vector<vector<string>> &equations, vector<double> &values, vector<vector<string>> &queries)
-
     // vector<vector<int>> prerequisites = {
     //     {1, 0},
     //     {2, 0},
@@ -140,11 +199,19 @@ int main()
     //     {3, 2},
     // };
 
-    //  nums = [1,2,3], sequences = [[1,2],[1,3],[2,3]]
     // vector<int> nums = {1, 2, 3};
-    vector<vector<int>> isConnected = {{1, 0, 0, 1}, {0, 1, 1, 0}, {0, 1, 1, 1}, {1, 0, 1, 1}};
+    // vector<vector<int>> isConnected = {
+    //     {1, 0, 0, 1},
+    //     {0, 1, 1, 0},
+    //     {0, 1, 1, 1},
+    //     {1, 0, 1, 1},
+    // };
+    vector<vector<int>> isConnected = {
+        {1, 1, 0},
+        {1, 1, 0},
+        {0, 0, 1},
+    };
 
-    // int findCircleNum(vector<vector<int>> &isConnected)
     auto res = findCircleNum(isConnected);
     std::cout << "res:" << res << std::endl;
 
