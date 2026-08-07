@@ -26,159 +26,113 @@
 using namespace std;
 
 /**
-LCR 116. 省份数量
-https://leetcode.cn/problems/bLyHh0/description/
+LCR 117. 相似字符串组
+https://leetcode.cn/problems/H6lPxb/description/
 
-有 n 个城市，其中一些彼此相连，另一些没有相连。如果城市 a 与城市 b 直接相连，且城市 b 与城市 c 直接相连，那么城市 a 与城市 c 间接相连。
-省份 是一组直接或间接相连的城市，组内不含其他没有相连的城市。
-给你一个 n x n 的矩阵 isConnected ，其中 isConnected[i][j] = 1 表示第 i 个城市和第 j 个城市直接相连，而 isConnected[i][j] = 0 表示二者不直接相连。
-返回矩阵中 省份 的数量。
+如果交换字符串 X 中的两个不同位置的字母，使得它和字符串 Y 相等，那么称 X 和 Y 两个字符串相似。如果这两个字符串本身是相等的，那它们也是相似的。
+例如，"tars" 和 "rats" 是相似的 (交换 0 与 2 的位置)； "rats" 和 "arts" 也是相似的，但是 "star" 不与 "tars"，"rats"，或 "arts" 相似。
+总之，它们通过相似性形成了两个关联组：{"tars", "rats", "arts"} 和 {"star"}。注意，"tars" 和 "arts" 是在同一组中，即使它们并不相似。
+形式上，对每个组而言，要确定一个单词在组中，只需要这个词和该组中至少一个单词相似。
+给定一个字符串列表 strs。列表中的每个字符串都是 strs 中其它所有字符串的一个 字母异位词 。请问 strs 中有多少个相似字符串组？
+字母异位词（anagram），一种把某个字符串的字母的位置（顺序）加以改换所形成的新词。
 
 示例 1：
-输入：isConnected = [[1,1,0],[1,1,0],[0,0,1]]
+输入：strs = ["tars","rats","arts","star"]
 输出：2
 
 示例 2：
-输入：isConnected = [[1,0,0],[0,1,0],[0,0,1]]
-输出：3
+输入：strs = ["omv","ovm"]
+输出：1
 
 提示：
-1 <= n <= 200
-n == isConnected.length
-n == isConnected[i].length
-isConnected[i][j] 为 1 或 0
-isConnected[i][i] == 1
-isConnected[i][j] == isConnected[j][i]
+1 <= strs.length <= 300
+1 <= strs[i].length <= 300
+strs[i] 只包含小写字母。
+strs 中的所有单词都具有相同的长度，且是彼此的字母异位词。
  */
 
 /**
- * 使用并查集解法：
- * - 并查集中只要属于一个阵营的，他的根节点都相同，跟节点的父节点是自己。
- * - 题目中只要属于一个省份的他的根节点都相同，刚开始所有节点的根节点都是自己，
- * - 接着遍历城市之间的链接二维矩阵，需要判断他们是否属于同一个子集中，也就是查看他们的根节点是否一样，如果一样，说明他们已经是属于同一个子集中了，就不用管了
- * -- 如果他们相连，但是根节点还不通，则需要将新节点的根节点设置为相同的根节点，则子集的个数也需要减少1
- * - 重点是查找节点的根节点方法，findFather，使用递归遍历，只有当父节点是自己的时候，这个节点才是根节点，不然就继续遍历他的父节点
- * -- 查找后还需要设置他的父节点为他的根节点
+ * 1、审题：输入一个字符串数组，数组中的字符串都是字母异位词，相似字符串意思是两个字符串中有两个字母不相同，其他位置的字母都相同
+ * - 现在要将相似的字符串组合成一个子集，并将所有子集的个数返回
+ * 2、解题：并查集解法
+ * - 和上一题116类似的思路，遍历数组中的每个字符串，给每个字符串设置他的根节点是自己，并且子集的个数也是n
+ * - 然后两层for循环遍历节点，让每个单词和后面位置的字符串进行比较，这样没两个单词之间都有交集了，就判断他们的是否是相似字符串（存在两个不同的字母）
+ * - 如果是相似字符串，则判断他们的根节点是否相同，不同的话需要将他们合并到一个子集中，并且所有子集个数减1，并最终返回
  */
 
 /**
- * 看是否能将两个节点i，j，进行合并到一起
- * - 先判断他们的根节点是否相同，
- * -- 如果相同，说明已经在一个子集中了，不用再合并了，直接返回false
- * -- 如果他们的根节点不同，说明当前他们还处于不同的子集中，但是他们又是相连的，需要合并到一块，所以需要将他们的父节点合并到一块
+ * 判断两个字符串，是否是相似字符串
+ * - 只有两个字母存在不同
  */
+bool isSimile(string &str1, string &str2)
+{
+  int num = 2;
+  for (int i = 0; i < str1.size(); i++)
+  {
+    if (str1[i] != str2[i])
+    {
+      num--;
+    }
+  }
+  return num == 0;
+}
 
-/**
- * 查找节点i的跟节点
- * - 直到父节点是自己，则返回自己
- * - 否则继续递归查找
- */
 int findFather(vector<int> &fathers, int i)
 {
   if (fathers[i] == i)
   {
-    return i;
+    return i; // 根节点是自己，返回去
   }
-  int fatherI = findFather(fathers, fathers[i]);
-  fathers[i] = fatherI;
-
+  int f = findFather(fathers, fathers[i]);
+  fathers[i] = f;
   return fathers[i];
 }
 
 bool merge(vector<int> &fathers, int i, int j)
 {
-  int fatherI = findFather(fathers, i);
-  int fatherJ = findFather(fathers, j);
-
-  if (fatherI == fatherJ) // 已经是属于同一个并查集中了,不用再合并
+  int fI = findFather(fathers, i);
+  int fJ = findFather(fathers, j);
+  if (fI == fJ)
   {
     return false;
   }
 
-  //  属于不同的并查集，则需要合并
-  fathers[fatherI] = fatherJ;
+  fathers[fI] = fJ;
   return true;
 }
 
-int findCircleNum(vector<vector<int>> &isConnected)
+int numSimilarGroups(vector<string> &strs)
 {
-  int n = isConnected.size();
-  vector<int> fathers(n, 0); // 保存n个城市的父节点
+  int n = strs.size();
+  int resNum = n;
+  vector<int> fathers(n, 0);
 
   for (int i = 0; i < n; i++)
   {
-    fathers[i] = i; // 先设置为自己，每个节点的父节点都是自己
+    fathers[i] = i;
   }
 
-  int res = n; // 当开始每个人都是单独的一个个体，还没有合并起来
-
-  // 遍历城市之间的链接关系
   for (int i = 0; i < n; i++)
   {
+    std::cout << " numSimilarGroups i: " << i << std::endl;
     for (int j = i + 1; j < n; j++)
     {
-      if (isConnected[i][j] == 1 && merge(fathers, i, j))
+      std::cout << " numSimilarGroups ------- j: " << j << std::endl;
+      // 如果两个字母相等，则直接合并
+      if (strs[i] == strs[j])
       {
-        res--;
-      }
-    }
-  }
-
-  return res;
-}
-
-/**
- * 1、审题：输入一个二维数组，数组中的元素为0或者1, arr[i][j] = 1,表示城市i和城市标记j之前相连，如果arr[i][j]=0;说明两个城市之间不相连
- * - 相连的城市属于同一个省份，不相连的说明不在同一个省份，现在要求提供的这些城市，一共有属于几个省份，并返回省份个数
- * 2、解题：使用图的广度搜索算法
- * - 使用n*n的 vector<bool>[n][n] visited 的数组表示哪些城市被访问过了，从城市0开始遍历，放到队列中去，并找到与城市0相连接的其他城市，也放到队列中去，他们都是属于同一个省份
- * - 遍历过的城市在数组visited中的值变为true，
- * - 从原始数组中获取一个城市，如果他之前没有遍历过，则返回1，表示他是一个新的省份，并需要将属于该省份的所有城市都进行标记
- * - 直到所有城市都标记完成
- */
-void bfs(vector<vector<int>> &isConnected, vector<bool> &visited, int n, int k)
-{
-  // 找到与k相连的城市
-  queue<int> queue;
-  visited[k] = true;
-  queue.push(k);
-
-  while (!queue.empty())
-  {
-    int node = queue.front();
-    queue.pop();
-    std::cout << " bfs  node-------:" << node << std::endl;
-
-    for (int i = 0; i < n; i++)
-    {
-      if (i == node || visited[i])
-      {
+        std::cout << " strs[i] == strs[j] ------- j: " << j << std::endl;
+        if (merge(fathers, i, j))
+        {
+          resNum--;
+        }
         continue;
       }
-      std::cout << " node:" << node << " ,i:" << i << " ,isConnected[k][i]:" << isConnected[node][i] << std::endl;
-      if (isConnected[node][i] == 1)
+
+      if (isSimile(strs[i], strs[j]) && merge(fathers, i, j))
       {
-        std::cout << " bfs  i -------:" << i << std::endl;
-        queue.push(i);
-        visited[i] = true;
+        resNum--;
       }
-    }
-  }
-}
-
-int findCircleNum1(vector<vector<int>> &isConnected)
-{
-  int n = isConnected.size();
-  vector<bool> visited(n, false);
-
-  int resNum = 0;
-  for (int i = 0; i < n; i++)
-  {
-    if (!visited[i])
-    {
-      std::cout << " for i:" << i << std::endl;
-      bfs(isConnected, visited, n, i);
-      resNum++;
     }
   }
   return resNum;
@@ -189,7 +143,7 @@ int main()
   std::cout << "《剑指》" << std::endl;
 
   // vector<string> words = {"wrt", "wrf", "er", "ett", "rftt"};
-  vector<string> words = {"ac", "ab", "b"};
+  vector<string> words = {"tars", "rats", "arts", "star"};
 
   // vector<double> calcEquation(vector<vector<string>> &equations, vector<double> &values, vector<vector<string>> &queries)
   // vector<vector<int>> prerequisites = {
@@ -206,13 +160,13 @@ int main()
   //     {0, 1, 1, 1},
   //     {1, 0, 1, 1},
   // };
-  vector<vector<int>> isConnected = {
-      {1, 1, 0},
-      {1, 1, 0},
-      {0, 0, 1},
-  };
+  // vector<vector<int>> isConnected = {
+  //     {1, 1, 0},
+  //     {1, 1, 0},
+  //     {0, 0, 1},
+  // };
 
-  auto res = findCircleNum(isConnected);
+  auto res = numSimilarGroups(words);
   std::cout << "res:" << res << std::endl;
 
   // 遍历1维数组
