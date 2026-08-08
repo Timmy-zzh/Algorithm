@@ -26,116 +26,28 @@
 using namespace std;
 
 /**
-LCR 117. 相似字符串组
-https://leetcode.cn/problems/H6lPxb/description/
+LCR 119. 最长连续序列
+https://leetcode.cn/problems/WhsWhI/description/
 
-如果交换字符串 X 中的两个不同位置的字母，使得它和字符串 Y 相等，那么称 X 和 Y 两个字符串相似。如果这两个字符串本身是相等的，那它们也是相似的。
-例如，"tars" 和 "rats" 是相似的 (交换 0 与 2 的位置)； "rats" 和 "arts" 也是相似的，但是 "star" 不与 "tars"，"rats"，或 "arts" 相似。
-总之，它们通过相似性形成了两个关联组：{"tars", "rats", "arts"} 和 {"star"}。注意，"tars" 和 "arts" 是在同一组中，即使它们并不相似。
-形式上，对每个组而言，要确定一个单词在组中，只需要这个词和该组中至少一个单词相似。
-给定一个字符串列表 strs。列表中的每个字符串都是 strs 中其它所有字符串的一个 字母异位词 。请问 strs 中有多少个相似字符串组？
-字母异位词（anagram），一种把某个字符串的字母的位置（顺序）加以改换所形成的新词。
+给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
 
 示例 1：
-输入：strs = ["tars","rats","arts","star"]
-输出：2
+输入：nums = [100,4,200,1,3,2]
+输出：4
+解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
 
 示例 2：
-输入：strs = ["omv","ovm"]
-输出：1
+输入：nums = [0,3,7,2,5,8,4,6,0,1]
+输出：9
 
 提示：
-1 <= strs.length <= 300
-1 <= strs[i].length <= 300
-strs[i] 只包含小写字母。
-strs 中的所有单词都具有相同的长度，且是彼此的字母异位词。
+0 <= nums.length <= 104
+-109 <= nums[i] <= 109
+
+进阶：可以设计并实现时间复杂度为 O(n) 的解决方案吗？
  */
-
-/**
- * 1、审题：输入一个字符串数组，数组中的字符串都是字母异位词，相似字符串意思是两个字符串中有两个字母不相同，其他位置的字母都相同
- * - 现在要将相似的字符串组合成一个子集，并将所有子集的个数返回
- * 2、解题：并查集解法
- * - 和上一题116类似的思路，遍历数组中的每个字符串，给每个字符串设置他的根节点是自己，并且子集的个数也是n
- * - 然后两层for循环遍历节点，让每个单词和后面位置的字符串进行比较，这样没两个单词之间都有交集了，就判断他们的是否是相似字符串（存在两个不同的字母）
- * - 如果是相似字符串，则判断他们的根节点是否相同，不同的话需要将他们合并到一个子集中，并且所有子集个数减1，并最终返回
- */
-
-/**
- * 判断两个字符串，是否是相似字符串
- * - 只有两个字母存在不同
- */
-bool isSimile(string &str1, string &str2)
+int longestConsecutive(vector<int> &nums)
 {
-  int num = 2;
-  for (int i = 0; i < str1.size(); i++)
-  {
-    if (str1[i] != str2[i])
-    {
-      num--;
-    }
-  }
-  return num == 0;
-}
-
-int findFather(vector<int> &fathers, int i)
-{
-  if (fathers[i] == i)
-  {
-    return i; // 根节点是自己，返回去
-  }
-  int f = findFather(fathers, fathers[i]);
-  fathers[i] = f;
-  return fathers[i];
-}
-
-bool merge(vector<int> &fathers, int i, int j)
-{
-  int fI = findFather(fathers, i);
-  int fJ = findFather(fathers, j);
-  if (fI == fJ)
-  {
-    return false;
-  }
-
-  fathers[fI] = fJ;
-  return true;
-}
-
-int numSimilarGroups(vector<string> &strs)
-{
-  int n = strs.size();
-  int resNum = n;
-  vector<int> fathers(n, 0);
-
-  for (int i = 0; i < n; i++)
-  {
-    fathers[i] = i;
-  }
-
-  for (int i = 0; i < n; i++)
-  {
-    std::cout << " numSimilarGroups i: " << i << std::endl;
-    for (int j = i + 1; j < n; j++)
-    {
-      std::cout << " numSimilarGroups ------- j: " << j << std::endl;
-      // 如果两个字母相等，则直接合并
-      if (strs[i] == strs[j])
-      {
-        std::cout << " strs[i] == strs[j] ------- j: " << j << std::endl;
-        if (merge(fathers, i, j))
-        {
-          resNum--;
-        }
-        continue;
-      }
-
-      if (isSimile(strs[i], strs[j]) && merge(fathers, i, j))
-      {
-        resNum--;
-      }
-    }
-  }
-  return resNum;
 }
 
 int main()
