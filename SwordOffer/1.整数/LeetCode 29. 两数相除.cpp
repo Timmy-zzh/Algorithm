@@ -63,61 +63,61 @@ divisor != 0
  */
 int divide(int dividend, int divisor)
 {
-  long res = 0;
-  int sign = 1; // 计算符号
+    long res = 0;
+    int sign = 1; // 计算符号
 
-  // 获取他的绝对值，先转成longlong类型，再转换符号
-  long dividendL = dividend;
-  long divisorL = divisor;
-  // 获取绝对值
-  if (dividend < 0)
-  {
-    dividendL = -dividendL;
-  }
-  if (divisor < 0)
-  {
-    divisorL = -divisorL;
-  }
-
-  // 获取正负数符号
-  if ((dividend < 0 && divisor < 0) || (dividend >= 0 && divisor > 0))
-  {
-    sign = 1;
-  }
-  else
-  {
-    sign = -1;
-  }
-
-  // 使用阶乘方式来处理
-  long temp = 0;
-  long multi = 0; // 重复的阶乘个数
-  while (dividendL >= divisorL)
-  {
-    multi = 1;
-    temp = divisorL;
-    while (dividendL > (temp << 1))
+    // 获取他的绝对值，先转成longlong类型，再转换符号
+    long dividendL = dividend;
+    long divisorL = divisor;
+    // 获取绝对值
+    if (dividend < 0)
     {
-      multi = multi << 1; // 往左移动
-      temp = temp << 1;
+        dividendL = -dividendL;
     }
-    dividendL -= temp;
-    res += multi;
-  }
-  if (sign < 0)
-  {
-    res = -res;
-  }
+    if (divisor < 0)
+    {
+        divisorL = -divisorL;
+    }
 
-  if (res > INT32_MAX)
-  {
-    return INT32_MAX;
-  }
-  if (res < INT32_MIN)
-  {
-    return INT32_MIN;
-  }
-  return res;
+    // 获取正负数符号
+    if ((dividend < 0 && divisor < 0) || (dividend >= 0 && divisor > 0))
+    {
+        sign = 1;
+    }
+    else
+    {
+        sign = -1;
+    }
+
+    // 使用阶乘方式来处理
+    long temp = 0;
+    long multi = 0; // 重复的阶乘个数
+    while (dividendL >= divisorL)
+    {
+        multi = 1;
+        temp = divisorL;
+        while (dividendL > (temp << 1))
+        {
+            multi = multi << 1; // 往左移动
+            temp = temp << 1;
+        }
+        dividendL -= temp;
+        res += multi;
+    }
+    if (sign < 0)
+    {
+        res = -res;
+    }
+
+    if (res > INT32_MAX)
+    {
+        return INT32_MAX;
+    }
+    if (res < INT32_MIN)
+    {
+        return INT32_MIN;
+    }
+    return res;
 }
 
 /**
@@ -134,127 +134,112 @@ int divide(int dividend, int divisor)
  */
 int divide1(int dividend, int divisor)
 {
-  long res = 0;
-  int sign = 1; // 计算符号
+    long res = 0;
+    int space = 1;
+    long dividendL = dividend;
+    long divisorL = divisor;
+    if (dividendL < 0)
+    {
+        space *= -1;
+        dividendL *= -1;
+    }
+    if (divisorL < 0)
+    {
+        space *= -1;
+        divisorL *= -1;
+    }
 
-  // 获取他的绝对值，先转成longlong类型，再转换符号
-  long dividendL = dividend;
-  long divisorL = divisor;
-  // 获取绝对值
-  if (dividend < 0)
-  {
-    dividendL = -dividendL;
-  }
-  if (divisor < 0)
-  {
-    divisorL = -divisorL;
-  }
-
-  // 获取正负数符号
-  if ((dividend < 0 && divisor < 0) || (dividend >= 0 && divisor > 0))
-  {
-    sign = 1;
-  }
-  else
-  {
-    sign = -1;
-  }
-
-  while (dividendL >= divisorL)
-  {
-    dividendL -= divisorL;
-    res++;
-  }
-  if (sign < 0)
-  {
-    res = -res;
-  }
-
-  if (res > INT32_MAX)
-  {
-    return INT32_MAX;
-  }
-  if (res < INT32_MIN)
-  {
-    return INT32_MIN;
-  }
-  return res;
+    while (dividendL >= divisorL)
+    {
+        dividendL -= divisorL;
+        res++;
+    }
+    res *= space;
+    if (res > INT32_MAX)
+    {
+        return INT32_MAX;
+    }
+    if (res < INT32_MIN)
+    {
+        return INT32_MIN;
+    }
+    return res;
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
-  auto res = divide(10, 3);
-  std::cout << "res:" << res << std::endl;
+    std::cout << "《剑指》" << std::endl;
+    auto res = divide(10, 3);
+    std::cout << "res:" << res << std::endl;
 
-  // vector<string> words = {"wrt", "wrf", "er", "ett", "rftt"};
-  // vector<string> words = {"tars", "rats", "arts", "star"};
+    // vector<string> words = {"wrt", "wrf", "er", "ett", "rftt"};
+    // vector<string> words = {"tars", "rats", "arts", "star"};
 
-  // vector<double> calcEquation(vector<vector<string>> &equations, vector<double> &values, vector<vector<string>> &queries)
-  // vector<vector<int>> prerequisites = {
-  //     {1, 0},
-  //     {2, 0},
-  //     {3, 1},
-  //     {3, 2},
-  // };
+    // vector<double> calcEquation(vector<vector<string>> &equations, vector<double> &values, vector<vector<string>> &queries)
+    // vector<vector<int>> prerequisites = {
+    //     {1, 0},
+    //     {2, 0},
+    //     {3, 1},
+    //     {3, 2},
+    // };
 
-  // vector<int> nums = {1, 2, 3};
-  // vector<vector<int>> isConnected = {
-  //     {1, 0, 0, 1},
-  //     {0, 1, 1, 0},
-  //     {0, 1, 1, 1},
-  //     {1, 0, 1, 1},
-  // };
-  // vector<vector<int>> isConnected = {
-  //     {1, 1, 0},
-  //     {1, 1, 0},
-  //     {0, 0, 1},
-  // };
+    // vector<int> nums = {1, 2, 3};
+    // vector<vector<int>> isConnected = {
+    //     {1, 0, 0, 1},
+    //     {0, 1, 1, 0},
+    //     {0, 1, 1, 1},
+    //     {1, 0, 1, 1},
+    // };
+    // vector<vector<int>> isConnected = {
+    //     {1, 1, 0},
+    //     {1, 1, 0},
+    //     {0, 0, 1},
+    // };
 
-  // vector<int> nums = {100, 4, 200, 1, 3, 2};
-  // vector<int> nums = {4, 0, -4, -2, 2, 5, 2, 0, -8, -8, -8, -8, -1, 7, 4, 5, 5, -4, 6, 6, -3};
-  // auto res = longestConsecutive(nums);
-  // std::cout << "res:" << res << std::endl;
+    // vector<int> nums = {100, 4, 200, 1, 3, 2};
+    // vector<int> nums = {4, 0, -4, -2, 2, 5, 2, 0, -8, -8, -8, -8, -1, 7, 4, 5, 5, -4, 6, 6, -3};
+    // auto res = longestConsecutive(nums);
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //   for (auto element : ele)
-  //   {
-  //     std::cout << element << ",";
-  //   }
-  //   std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //   for (auto element : ele)
+    //   {
+    //     std::cout << element << ",";
+    //   }
+    //   std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  // std::cout << "map +++++++++++++++ " << std::endl;
-  // for (auto ele : map)
-  // {
-  //   std::cout << ele.first << " ---- nextNodes: " << std::endl;
-  //   for (auto ele : ele.second)
-  //   {
-  //     std::cout << ele;
-  //     std::cout << std::endl;
-  //   }
+    // std::cout << "map +++++++++++++++ " << std::endl;
+    // for (auto ele : map)
+    // {
+    //   std::cout << ele.first << " ---- nextNodes: " << std::endl;
+    //   for (auto ele : ele.second)
+    //   {
+    //     std::cout << ele;
+    //     std::cout << std::endl;
+    //   }
 
-  //   std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    //   std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  // std::cout << "inDegreeMap ============ " << std::endl;
-  // for (auto ele : inDegreeMap)
-  // {
-  //   std::cout << ele.first << " ---- " << ele.second;
-  //   std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // std::cout << "inDegreeMap ============ " << std::endl;
+    // for (auto ele : inDegreeMap)
+    // {
+    //   std::cout << ele.first << " ---- " << ele.second;
+    //   std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
