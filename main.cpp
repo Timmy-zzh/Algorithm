@@ -27,164 +27,66 @@
 using namespace std;
 
 /**
-29. 两数相除
-https://leetcode.cn/problems/divide-two-integers/description/
+LeetCode 67. 二进制求和
+https://leetcode.cn/problems/add-binary/description/
 
-给你两个整数，被除数 dividend 和除数 divisor。将两数相除，要求 不使用 乘法、除法和取余运算。
-整数除法应该向零截断，也就是截去（truncate）其小数部分。例如，8.345 将被截断为 8 ，-2.7335 将被截断至 -2 。
-返回被除数 dividend 除以除数 divisor 得到的 商 。
-注意：假设我们的环境只能存储 32 位 有符号整数，其数值范围是 [−231,  231 − 1] 。本题中，如果商 严格大于 231 − 1 ，则返回 231 − 1 ；如果商 严格小于 -231 ，则返回 -231 。
+给你两个二进制字符串 a 和 b ，以二进制字符串的形式返回它们的和。
 
-示例 1:
-输入: dividend = 10, divisor = 3
-输出: 3
-解释: 10/3 = 3.33333.. ，向零截断后得到 3 。
+示例 1：
+输入:a = "11", b = "1"
+输出："100"
 
-示例 2:
-输入: dividend = 7, divisor = -3
-输出: -2
-解释: 7/-3 = -2.33333.. ，向零截断后得到 -2 。
+示例 2：
+输入：a = "1010", b = "1011"
+输出："10101"
 
 提示：
--231 <= dividend, divisor <= 231 - 1
-divisor != 0
+1 <= a.length, b.length <= 104
+a 和 b 仅由字符 '0' 或 '1' 组成
+字符串如果不是 "0" ，就不含前导零
  */
 
 /**
- * 1、之前的算法思路会导致超时，是因为在while循环中每次循环都是在除数 dividendL 的基础上减去被除数 divisorL 的值，
- * - 这样当除数很大，而被除数只是1的情况下，那这个while循环就需要循环很多次数，导致超时
- * 2、那现在的关键就是减少while的循环次数，让被除数不在只是累减处理，而是以2的倍数来累减计算值，在内层增加一个while循环来让被除数不断乘以2的阶乘
- * - 只要不超过除数，就可以一直增加这个阶乘值，直到超过，这样每次一次外层循环，减少的就是被除数的2的阶乘的个数，内层while循环不断计算出可以减少的被除数个数
- * - 忘记了不能用乘法
- * 3、总结：
- * - 要求除法结果，但是计算时不能用乘法和除法运算法
- * - 数据类型范围值越界，需要类型扩容int类型扩展至long类型
- * - 不能一个一个的不断的减少除数的个数，太耗时，改为一次减少多个，计算可以减少的个数 （这个逻辑是这道题的核心思路）
- */
-int divide(int dividend, int divisor)
-{
-  long res = 0;
-  int sign = 1; // 计算符号
-
-  // 获取他的绝对值，先转成longlong类型，再转换符号
-  long dividendL = dividend;
-  long divisorL = divisor;
-  // 获取绝对值
-  if (dividend < 0)
-  {
-    dividendL = -dividendL;
-  }
-  if (divisor < 0)
-  {
-    divisorL = -divisorL;
-  }
-
-  // 获取正负数符号
-  if ((dividend < 0 && divisor < 0) || (dividend >= 0 && divisor > 0))
-  {
-    sign = 1;
-  }
-  else
-  {
-    sign = -1;
-  }
-
-  // 使用阶乘方式来处理
-  long temp = 0;
-  long multi = 0; // 重复的阶乘个数
-  while (dividendL >= divisorL)
-  {
-    multi = 1;
-    temp = divisorL;
-    while (dividendL > (temp << 1))
-    {
-      multi = multi << 1; // 往左移动
-      temp = temp << 1;
-    }
-    dividendL -= temp;
-    res += multi;
-  }
-  if (sign < 0)
-  {
-    res = -res;
-  }
-
-  if (res > INT32_MAX)
-  {
-    return INT32_MAX;
-  }
-  if (res < INT32_MIN)
-  {
-    return INT32_MIN;
-  }
-  return res;
-}
-
-/**
- * 1、审题：
- * - 题目输入两个整数，分别是被除数 dividend，和除数 divisor，现在要求不适用乘法除法取余这些运算符，来进行求除法运算的商
- * - 题目给出的要求是如果商大于2的31次方，则返回最大值2的31次方，最小值也是一样的返回逻辑
+ * 1、审题：输入两个字符串，字符串是由二进制的0和1组成，现在要将两个字符串中的二进制进行加法运算，并以二进制的形式返回他们的和
  * 2、解题：
- * - 题目限制不能用乘法、除法和取余运算符，可以考虑使用加法，减法，只是最基本的暴力运算方法实现
- * - 被除数每次不断减少除数的数值，他的结果值加1，直到小于除数，则返回结果值。
- * - 在相除前还需要判断正负数,如果为负数，则将他们转换成正数，并且使用一个值space来保存他们最后结果值商的正负数
- * - 对于最小数 负的2的31次方这个数，如果将他们转成正数2的31次方，则超过了int类型范围的最大值，所以需要使用long类型来承接数据
- * 3、通过while循环每次都减少一个除数的值，效率还是太慢了，需要进行优化解法
- * - 通过寻找整数的规律，采用位移的方式，将除数每次往左移动一位，他的结果就是两倍数值了。按照这个思路来
+ * - 通过while循环，不断两个字符串中二进制的最低位，两个字符串都需要获取，如果没有则使用0代替，
+ * - 将获取到的字符串转成int类型，然后进行加法运算，如何和超过1，则需要进位处理
+ * - 将所有字符串位数的和结果添加到结果字符串中
  */
-int divide1(int dividend, int divisor)
+string addBinary(string a, string b)
 {
-  long res = 0;
-  int sign = 1; // 计算符号
+  int index1 = a.length() - 1;
+  int index2 = b.length() - 1;
+  string res = "";
+  int carry = 0; // 进位
+  int item = 0;
+  while (index1 >= 0 || index2 >= 0)
+  {
+    int int1 = index1 >= 0 ? (a[index1] - '0') : 0;
+    int int2 = index2 >= 0 ? (b[index2] - '0') : 0;
 
-  // 获取他的绝对值，先转成longlong类型，再转换符号
-  long dividendL = dividend;
-  long divisorL = divisor;
-  // 获取绝对值
-  if (dividend < 0)
-  {
-    dividendL = -dividendL;
-  }
-  if (divisor < 0)
-  {
-    divisorL = -divisorL;
-  }
+    int sum = int1 + int2 + carry;
+    carry = sum / 2; // 进位
+    item = sum % 2;  // 取余，就是当前位的值
 
-  // 获取正负数符号
-  if ((dividend < 0 && divisor < 0) || (dividend >= 0 && divisor > 0))
-  {
-    sign = 1;
-  }
-  else
-  {
-    sign = -1;
+    res = std::to_string(item) + res;
+
+    index1--;
+    index2--;
   }
 
-  while (dividendL >= divisorL)
+  if (carry > 0)
   {
-    dividendL -= divisorL;
-    res++;
-  }
-  if (sign < 0)
-  {
-    res = -res;
+    res = std::to_string(carry) + res;
   }
 
-  if (res > INT32_MAX)
-  {
-    return INT32_MAX;
-  }
-  if (res < INT32_MIN)
-  {
-    return INT32_MIN;
-  }
   return res;
 }
 
 int main()
 {
   std::cout << "《剑指》" << std::endl;
-  auto res = divide(10, 3);
+  auto res = addBinary("11", "1");
   std::cout << "res:" << res << std::endl;
 
   // vector<string> words = {"wrt", "wrf", "er", "ett", "rftt"};
