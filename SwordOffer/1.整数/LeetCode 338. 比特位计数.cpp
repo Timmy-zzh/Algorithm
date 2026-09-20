@@ -67,14 +67,14 @@ https://leetcode.cn/problems/counting-bits/description/
  */
 vector<int> countBits(int n)
 {
-  vector<int> res(n + 1, 0);
+    vector<int> res(n + 1, 0);
 
-  for (int i = 1; i <= n; i++)
-  {
-    res[i] = res[i / 2] + (i & 1);
-  }
+    for (int i = 1; i <= n; i++)
+    {
+        res[i] = res[i / 2] + (i & 1);
+    }
 
-  return res;
+    return res;
 }
 
 /**
@@ -84,19 +84,19 @@ vector<int> countBits(int n)
  */
 vector<int> countBits2(int n)
 {
-  vector<int> res(n + 1, 0);
+    vector<int> res(n + 1, 0);
 
-  for (int i = 0; i <= n; i++)
-  {
-    int num = i;
-    while (num != 0)
+    for (int i = 0; i <= n; i++)
     {
-      num = num & (num - 1);
-      res[i]++;
+        int num = i;
+        while (num != 0)
+        {
+            num = num & (num - 1);
+            res[i]++;
+        }
     }
-  }
 
-  return res;
+    return res;
 }
 
 /**
@@ -109,78 +109,78 @@ vector<int> countBits2(int n)
  */
 vector<int> countBits1(int n)
 {
-  vector<int> res(n + 1, 0);
+    vector<int> res(n + 1, 0);
 
-  string binaryStr = ""; // 数字i对应的二进制结果值
+    string binaryStr = ""; // 数字i对应的二进制结果值
 
-  for (int i = 0; i <= n; i++)
-  {
-    int num = i;
-    binaryStr = "";
-    while (num != 0)
+    for (int i = 0; i <= n; i++)
     {
-      // 十进制数字num转换成二进制
-      int remainder = num % 2; // 取余数
-      int business = num / 2;  // 商
+        int num = i;
+        binaryStr = "";
+        while (num != 0)
+        {
+            // 十进制数字num转换成二进制
+            int remainder = num % 2; // 取余数
+            int business = num / 2;  // 商
 
-      if (remainder == 1)
-      {
-        res[i]++;
-      }
-      num = business;
-      binaryStr = to_string(remainder) + binaryStr;
+            if (remainder == 1)
+            {
+                res[i]++;
+            }
+            num = business;
+            binaryStr = to_string(remainder) + binaryStr;
+        }
+        std::cout << i << " -- " << binaryStr << std::endl;
     }
-    std::cout << i << " -- " << binaryStr << std::endl;
-  }
 
-  return res;
+    return res;
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
-  auto res = countBits(6);
-  // std::cout << "res:" << res << std::endl;
+    std::cout << "《剑指》" << std::endl;
+    auto res = countBits(6);
+    // std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  for (auto ele : res)
-  {
-    std::cout << ele << ",";
-  }
-  std::cout << std::endl;
+    // 遍历1维数组
+    for (auto ele : res)
+    {
+        std::cout << ele << ",";
+    }
+    std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //   for (auto element : ele)
-  //   {
-  //     std::cout << element << ",";
-  //   }
-  //   std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //   for (auto element : ele)
+    //   {
+    //     std::cout << element << ",";
+    //   }
+    //   std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  // std::cout << "map +++++++++++++++ " << std::endl;
-  // for (auto ele : map)
-  // {
-  //   std::cout << ele.first << " ---- nextNodes: " << std::endl;
-  //   for (auto ele : ele.second)
-  //   {
-  //     std::cout << ele;
-  //     std::cout << std::endl;
-  //   }
+    // std::cout << "map +++++++++++++++ " << std::endl;
+    // for (auto ele : map)
+    // {
+    //   std::cout << ele.first << " ---- nextNodes: " << std::endl;
+    //   for (auto ele : ele.second)
+    //   {
+    //     std::cout << ele;
+    //     std::cout << std::endl;
+    //   }
 
-  //   std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    //   std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  // std::cout << "inDegreeMap ============ " << std::endl;
-  // for (auto ele : inDegreeMap)
-  // {
-  //   std::cout << ele.first << " ---- " << ele.second;
-  //   std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // std::cout << "inDegreeMap ============ " << std::endl;
+    // for (auto ele : inDegreeMap)
+    // {
+    //   std::cout << ele.first << " ---- " << ele.second;
+    //   std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
