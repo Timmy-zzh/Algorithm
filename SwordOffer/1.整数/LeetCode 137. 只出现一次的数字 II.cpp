@@ -57,27 +57,27 @@ nums 中，除某个元素仅出现 一次 外，其余每个元素都恰出现 
  */
 int singleNumber1(vector<int> &nums)
 {
-  // 创建一个32长度的int数组
-  vector<int> arr(32, 0);
-  int res = 0;
+    // 创建一个32长度的int数组
+    vector<int> arr(32, 0);
+    int res = 0;
 
-  // 对数组中每个数字，都去找到他们二进制对应32个位置的数值，并累加起来
-  for (int i = 0; i < nums.size(); i++)
-  {
-    int num = nums[i];
+    // 对数组中每个数字，都去找到他们二进制对应32个位置的数值，并累加起来
+    for (int i = 0; i < nums.size(); i++)
+    {
+        int num = nums[i];
+        for (int j = 0; j < 32; j++)
+        {
+            arr[32 - j - 1] += (num >> j) & 1;
+        }
+    }
+
+    // 取出32位数组中每个位置的二进制累加和，与3相除取余数，
     for (int j = 0; j < 32; j++)
     {
-      arr[32 - j - 1] += (num >> j) & 1;
+        res = (res << 1) + (arr[j] % 3);
     }
-  }
 
-  // 取出32位数组中每个位置的二进制累加和，与3相除取余数，
-  for (int j = 0; j < 32; j++)
-  {
-    res = (res << 1) + (arr[j] % 3);
-  }
-
-  return res;
+    return res;
 }
 
 /**
@@ -85,80 +85,80 @@ int singleNumber1(vector<int> &nums)
  */
 int singleNumber(vector<int> &nums)
 {
-  // 创建一个32长度的int数组
-  std::map<int, int> map;
-  int res = 0;
+    // 创建一个32长度的int数组
+    std::map<int, int> map;
+    int res = 0;
 
-  // 对数组中每个数字，都去找到他们二进制对应32个位置的数值，并累加起来
-  for (int i = 0; i < nums.size(); i++)
-  {
-    int num = nums[i];
-    if (map.find(num) == map.end()) // 不存在
+    // 对数组中每个数字，都去找到他们二进制对应32个位置的数值，并累加起来
+    for (int i = 0; i < nums.size(); i++)
     {
-      map[num] = 1;
+        int num = nums[i];
+        if (map.find(num) == map.end()) // 不存在
+        {
+            map[num] = 1;
+        }
+        else
+        {
+            map[num] = map[num] + 1;
+        }
     }
-    else
-    {
-      map[num] = map[num] + 1;
-    }
-  }
 
-  for (auto it : map)
-  {
-    if (it.second == 1)
+    for (auto it : map)
     {
-      return it.first;
+        if (it.second == 1)
+        {
+            return it.first;
+        }
     }
-  }
-  return res;
+    return res;
 }
 
 int main()
 {
-  std::cout << "《剑指》" << std::endl;
-  vector<int> nums = {0, 1, 0, 1, 0, 1, 100};
-  auto res = singleNumber(nums);
-  std::cout << "res:" << res << std::endl;
+    std::cout << "《剑指》" << std::endl;
+    vector<int> nums = {0, 1, 0, 1, 0, 1, 100};
+    auto res = singleNumber(nums);
+    std::cout << "res:" << res << std::endl;
 
-  // 遍历1维数组
-  // for (auto ele : res)
-  // {
-  //   std::cout << ele << ",";
-  // }
-  // std::cout << std::endl;
+    // 遍历1维数组
+    // for (auto ele : res)
+    // {
+    //   std::cout << ele << ",";
+    // }
+    // std::cout << std::endl;
 
-  // 遍历2维数组
-  // for (vector<int> ele : res)
-  // {
-  //   for (auto element : ele)
-  //   {
-  //     std::cout << element << ",";
-  //   }
-  //   std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // 遍历2维数组
+    // for (vector<int> ele : res)
+    // {
+    //   for (auto element : ele)
+    //   {
+    //     std::cout << element << ",";
+    //   }
+    //   std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  // std::cout << "map +++++++++++++++ " << std::endl;
-  // for (auto ele : map)
-  // {
-  //   std::cout << ele.first << " ---- nextNodes: " << std::endl;
-  //   for (auto ele : ele.second)
-  //   {
-  //     std::cout << ele;
-  //     std::cout << std::endl;
-  //   }
+    // std::cout << "map +++++++++++++++ " << std::endl;
+    // for (auto ele : map)
+    // {
+    //   std::cout << ele.first << " ---- nextNodes: " << std::endl;
+    //   for (auto ele : ele.second)
+    //   {
+    //     std::cout << ele;
+    //     std::cout << std::endl;
+    //   }
 
-  //   std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    //   std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  // std::cout << "inDegreeMap ============ " << std::endl;
-  // for (auto ele : inDegreeMap)
-  // {
-  //   std::cout << ele.first << " ---- " << ele.second;
-  //   std::cout << std::endl;
-  // }
-  // std::cout << std::endl;
+    // std::cout << "inDegreeMap ============ " << std::endl;
+    // for (auto ele : inDegreeMap)
+    // {
+    //   std::cout << ele.first << " ---- " << ele.second;
+    //   std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 
-  return 0;
+    return 0;
 }
