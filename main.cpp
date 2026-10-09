@@ -27,87 +27,161 @@
 using namespace std;
 
 /**
-137. 只出现一次的数字 II
-https://leetcode.cn/problems/single-number-ii/description/
+LeetCode 318. 最大单词长度乘积
+https://leetcode.cn/problems/maximum-product-of-word-lengths/description/
 
-给你一个整数数组 nums ，除某个元素仅出现 一次 外，其余每个元素都恰出现 三次 。请你找出并返回那个只出现了一次的元素。
-你必须设计并实现线性时间复杂度的算法且使用常数级空间来解决此问题。
+给你一个字符串数组 words ，找出并返回 length(words[i]) * length(words[j]) 的最大值，并且这两个单词不含有公共字母。如果不存在这样的两个单词，返回 0 。
 
 示例 1：
-输入：nums = [2,2,3,2]
-输出：3
+输入：words = ["abcw","baz","foo","bar","xtfn","abcdef"]
+输出：16
+解释：这两个单词为 "abcw", "xtfn"。
 
 示例 2：
-输入：nums = [0,1,0,1,0,1,99]
-输出：99
+输入： words = ["a","ab","abc","d","cd","bcd","abcd"]
+输出：4
+解释：这两个单词为 "ab", "cd"。
+
+示例 3：
+输入：words = ["a","aa","aaa","aaaa"]
+输出：0
+解释：不存在这样的两个单词。
 
 提示：
-1 <= nums.length <= 3 * 104
--231 <= nums[i] <= 231 - 1
-nums 中，除某个元素仅出现 一次 外，其余每个元素都恰出现 三次
+2 <= words.length <= 1000
+1 <= words[i].length <= 1000
+words[i] 仅包含小写字母
  */
 
 /**
- * 1、审题：
- * - 输入一个整数数组，数组中的整数每个数字都出现了三次，但其中有个数字只出现了一次，现在要求找出这个只出现一次的数字并返回
- * 2、解题：二进制记录法
- * - 每个整数int类型大小是4个字节也就是32位，使用一个32长度的整数数组用来保存数组中所有数字的二进制的累计和
- * - 如果一个数字在数组中出现了三次，那在某个二进制位中他的累计和要么等于3，要么等于0，可将该累加和求3的余数，他们肯定都是0
- * - 采用这种思路，将数组中所有数字的二进制的每个位置的值进行累加起来，再与3求余数，得到的余数组合起来，就是那个单独出现一次数组的二进制
+ * 1、二进制解法
+ * - 之前使用的是一个26长度的bool数组，用来保存单个字符串中每个字母是否存在的标记位，也可以使用数字0和1来表示，正好对应二进制的值
+ * - 这次使用int[]数组arr来保存，数组长度为words的长度，数组中每个单词中每个字母，他存在的位置使用数组arr中的具体位数来表示
+ * -
  */
-int singleNumber1(vector<int> &nums)
+int maxProduct2(vector<string> &words)
 {
-  // 创建一个32长度的int数组
-  vector<int> arr(32, 0);
+  int size = words.size();
+  vector<int> arr(size, 0);
   int res = 0;
 
-  // 对数组中每个数字，都去找到他们二进制对应32个位置的数值，并累加起来
-  for (int i = 0; i < nums.size(); i++)
+  // 先遍历数组中的单词，并对每个单词中的字母进行记录到arr数组中去
+  for (int i = 0; i < size; i++)
   {
-    int num = nums[i];
-    for (int j = 0; j < 32; j++)
+    string word = words[i];
+    for (int j = 0; j < word.length(); j++)
     {
-      arr[32 - j - 1] += (num >> j) & 1;
+      arr[i] |= 1 << (word[j] - 'a');
     }
   }
 
-  // 取出32位数组中每个位置的二进制累加和，与3相除取余数，
-  for (int j = 0; j < 32; j++)
+  // 两个单词比较
+  for (int i = 0; i < words.size(); i++)
   {
-    res = (res << 1) + (arr[j] % 3);
-  }
+    for (int j = i + 1; j < words.size(); j++)
+    {
+      string str1 = words[i];
+      string str2 = words[j];
 
+      if ((arr[i] & arr[j]) == 0)
+      {
+        int itemNum = str1.length() * str2.length();
+        res = max(res, itemNum);
+      }
+    }
+  }
   return res;
 }
 
 /**
- * 使用map保存每个数字出现的次数，最后找出出现一次的数字并返回
+ * 1、审题：输入一个由字符串组成的数组，现在需要从数组中找出两个字符串元素，要求两个字符串不能有相同的字母，且两个单词的长度乘积最长，并返回乘积的值
+ * 2、解题：这个问题的核心在于找到两个单词，要求单词中的字母都不相同
+ * - ① 朴素解法：
+ * -- 两个单词两两比较， 接着比较两个单词中的字母再来两两比较是否存在相等的字母，时间复杂度为n^4，太多计算次数了，不符合要求
+ * - ② 预先记录法：
+ * -- 先遍历所有的字符串，记录每个字符串中每个字母是否出现过，使用二维数组，vector[i][26]=bool 记录每个单词，中每个位置是否存在该字母，如果存在则其值为true
+ * -- 再使用两层for循环，找到需要比较的两个字符串，接着遍历26个字母，判断遍历到的该字母，再数组的位置i，和j位置的字符串是否存在该字母即可，如果都存在，则说明两个字符串都存在该字母，不符合要求
+ * -- 如果没有同时存在，且求出他们的最后长度乘积的值
  */
-int singleNumber(vector<int> &nums)
+int maxProduct1(vector<string> &words)
 {
-  // 创建一个32长度的int数组
-  std::map<int, int> map;
   int res = 0;
+  int size = words.size();
+  // 二维数据
+  vector<vector<bool>> arr(size, vector<bool>(26, false));
 
-  // 对数组中每个数字，都去找到他们二进制对应32个位置的数值，并累加起来
-  for (int i = 0; i < nums.size(); i++)
+  // 遍历数组中所有字符串，并标记字符串中该字母是否存在与否
+  for (int i = 0; i < words.size(); i++)
   {
-    int num = nums[i];
-    if (map.find(num) == map.end()) // 不存在
+    string word = words[i];
+    for (int j = 0; j < word.length(); j++)
     {
-      map[num] = 1;
-    }
-    else
-    {
-      map[num] = map[num] + 1;
+      char ch = word[j];
+      arr[i][ch - 'a'] = true;
     }
   }
 
-  for (auto it : map)
+  // 找出需要比较的两两字符串
+  for (int i = 0; i < words.size(); i++)
   {
-    if (it.second == 1)
+    for (int j = i + 1; j < words.size(); j++)
     {
-      return it.first;
+      string str1 = words[i];
+      string str2 = words[j];
+
+      // 遍历26个字母，判断该字母是否再两个字符串中是否都同时存在
+      int k = 0;
+      for (; k < 26; k++)
+      {
+        if (arr[i][k] && arr[j][k])
+        {
+          break;
+        }
+      }
+      if (k == 26) // 都不存在，求他们的乘积
+      {
+        int itemNum = str1.length() * str2.length();
+        res = max(res, itemNum);
+      }
+    }
+  }
+  return res;
+}
+
+int maxProduct(vector<string> &words)
+{
+  int res = 0;
+  // 找出需要比较的两两字符串
+  for (int i = 0; i < words.size(); i++)
+  {
+    for (int j = i + 1; j < words.size(); j++)
+    {
+      string str1 = words[i];
+      string str2 = words[j];
+
+      int m = 0;
+      int n = 0;
+      for (; m < str1.length(); m++)
+      {
+        n = 0;
+        for (; n < str2.length(); n++)
+        {
+          if (str1[m] == str2[n])
+          {
+            break;
+          }
+        }
+        if (n != str2.length())
+        {
+          break;
+        }
+      }
+
+      if (m == str1.length() && n == str2.length())
+      {
+        int itemNum = str1.length() * str2.length();
+        res = max(res, itemNum);
+      }
     }
   }
   return res;
@@ -116,8 +190,8 @@ int singleNumber(vector<int> &nums)
 int main()
 {
   std::cout << "《剑指》" << std::endl;
-  vector<int> nums = {0, 1, 0, 1, 0, 1, 100};
-  auto res = singleNumber(nums);
+  vector<string> words = {"abcw", "baz", "foo", "bar", "xtfn", "abcdef"};
+  auto res = maxProduct(words);
   std::cout << "res:" << res << std::endl;
 
   // 遍历1维数组
