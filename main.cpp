@@ -27,172 +27,98 @@
 using namespace std;
 
 /**
-LeetCode 318. 最大单词长度乘积
-https://leetcode.cn/problems/maximum-product-of-word-lengths/description/
+LeetCode 167. 两数之和 II - 输入有序数组
+https://leetcode.cn/problems/two-sum-ii-input-array-is-sorted/description/
 
-给你一个字符串数组 words ，找出并返回 length(words[i]) * length(words[j]) 的最大值，并且这两个单词不含有公共字母。如果不存在这样的两个单词，返回 0 。
+给你一个下标从 1 开始的整数数组 numbers ，该数组已按 非递减顺序排列。
+请你从数组中找出满足相加之和等于目标数 target 的 两个 数。令这两个数分别是 numbers[index1] 和 numbers[index2] ，其中 1 <= index1 < index2 <= numbers.length 。
+以长度为 2 的整数数组 [index1, index2] 的形式返回这两个整数的下标 index1 和 index2。
+你可以假设每个输入 只对应唯一的答案 ，而且你 不可以 重复使用相同的元素。
+你所设计的解决方案必须只使用常数级的额外空间。
 
 示例 1：
-输入：words = ["abcw","baz","foo","bar","xtfn","abcdef"]
-输出：16
-解释：这两个单词为 "abcw", "xtfn"。
+输入：numbers = [2,7,11,15], target = 9
+输出：[1,2]
+解释：2 与 7 之和等于目标数 9 。因此 index1 = 1, index2 = 2 。返回 [1, 2] 。
 
 示例 2：
-输入： words = ["a","ab","abc","d","cd","bcd","abcd"]
-输出：4
-解释：这两个单词为 "ab", "cd"。
+输入：numbers = [2,3,4], target = 6
+输出：[1,3]
+解释：2 与 4 之和等于目标数 6 。因此 index1 = 1, index2 = 3 。返回 [1, 3] 。
 
 示例 3：
-输入：words = ["a","aa","aaa","aaaa"]
-输出：0
-解释：不存在这样的两个单词。
+输入：numbers = [-1,0], target = -1
+输出：[1,2]
+解释：-1 与 0 之和等于目标数 -1 。因此 index1 = 1, index2 = 2 。返回 [1, 2] 。
 
 提示：
-2 <= words.length <= 1000
-1 <= words[i].length <= 1000
-words[i] 仅包含小写字母
+2 <= numbers.length <= 3 * 104
+-1000 <= numbers[i] <= 1000
+numbers 按 非递减顺序 排列
+-1000 <= target <= 1000
+仅存在一个有效答案
  */
 
 /**
- * 1、二进制解法
- * - 之前使用的是一个26长度的bool数组，用来保存单个字符串中每个字母是否存在的标记位，也可以使用数字0和1来表示，正好对应二进制的值
- * - 这次使用int[]数组arr来保存，数组长度为words的长度，数组中每个单词中每个字母，他存在的位置使用数组arr中的具体位数来表示
- * -
+ * 双指针解法：
+ * - 题目给出的数组是元素递增数组，可以采用递增数组的特性，使用双指针，默认left指向元素下标0，right指向数组下标size-1元素
+ * - 判断他们的和是否等于目标值，如果相等就返回left，right的数组
+ * - 如果他们的和不等于目标值，如果和大于目标值大小，则right--右侧指针左移将他们的和减少；否则left=++左侧指针右移让和增大
  */
-int maxProduct2(vector<string> &words)
+vector<int> twoSum(vector<int> &numbers, int target)
 {
-  int size = words.size();
-  vector<int> arr(size, 0);
-  int res = 0;
+  int size = numbers.size();
+  int left = 0;
+  int right = size - 1;
+  int sum = 0;
+  while (left < right)
+  {
+    sum = numbers[left] + numbers[right];
+    if (sum == target)
+    {
+      return {left + 1, right + 1};
+    }
+    else if (sum > target)
+    {
+      right--;
+    }
+    else
+    {
+      left++;
+    }
+  }
 
-  // 先遍历数组中的单词，并对每个单词中的字母进行记录到arr数组中去
+  return {};
+}
+
+/**
+ * 1、审题：输入一个递增整数数组和一个目标值target，要求从数组中找出两个不重复非元素，两个元素的和等于目标值target，并最终返回这两个元素的下标值
+ * 2、解题：暴力解法
+ * - 两层for循环让数组中每个元素都能与其他元素两两相加，求他们的和，判断是否等于目标值target
+ * 3、时间复杂度：n^2,超出时间限制
+ */
+vector<int> twoSum1(vector<int> &numbers, int target)
+{
+  int size = numbers.size();
   for (int i = 0; i < size; i++)
   {
-    string word = words[i];
-    for (int j = 0; j < word.length(); j++)
+    for (int j = i + 1; j < size; j++)
     {
-      arr[i] |= 1 << (word[j] - 'a');
-    }
-  }
-
-  // 两个单词比较
-  for (int i = 0; i < words.size(); i++)
-  {
-    for (int j = i + 1; j < words.size(); j++)
-    {
-      string str1 = words[i];
-      string str2 = words[j];
-
-      if ((arr[i] & arr[j]) == 0)
+      if ((numbers[i] + numbers[j]) == target)
       {
-        int itemNum = str1.length() * str2.length();
-        res = max(res, itemNum);
+        return {i + 1, j + 1};
       }
     }
   }
-  return res;
-}
-
-/**
- * 1、审题：输入一个由字符串组成的数组，现在需要从数组中找出两个字符串元素，要求两个字符串不能有相同的字母，且两个单词的长度乘积最长，并返回乘积的值
- * 2、解题：这个问题的核心在于找到两个单词，要求单词中的字母都不相同
- * - ① 朴素解法：
- * -- 两个单词两两比较， 接着比较两个单词中的字母再来两两比较是否存在相等的字母，时间复杂度为n^4，太多计算次数了，不符合要求
- * - ② 预先记录法：
- * -- 先遍历所有的字符串，记录每个字符串中每个字母是否出现过，使用二维数组，vector[i][26]=bool 记录每个单词，中每个位置是否存在该字母，如果存在则其值为true
- * -- 再使用两层for循环，找到需要比较的两个字符串，接着遍历26个字母，判断遍历到的该字母，再数组的位置i，和j位置的字符串是否存在该字母即可，如果都存在，则说明两个字符串都存在该字母，不符合要求
- * -- 如果没有同时存在，且求出他们的最后长度乘积的值
- */
-int maxProduct1(vector<string> &words)
-{
-  int res = 0;
-  int size = words.size();
-  // 二维数据
-  vector<vector<bool>> arr(size, vector<bool>(26, false));
-
-  // 遍历数组中所有字符串，并标记字符串中该字母是否存在与否
-  for (int i = 0; i < words.size(); i++)
-  {
-    string word = words[i];
-    for (int j = 0; j < word.length(); j++)
-    {
-      char ch = word[j];
-      arr[i][ch - 'a'] = true;
-    }
-  }
-
-  // 找出需要比较的两两字符串
-  for (int i = 0; i < words.size(); i++)
-  {
-    for (int j = i + 1; j < words.size(); j++)
-    {
-      string str1 = words[i];
-      string str2 = words[j];
-
-      // 遍历26个字母，判断该字母是否再两个字符串中是否都同时存在
-      int k = 0;
-      for (; k < 26; k++)
-      {
-        if (arr[i][k] && arr[j][k])
-        {
-          break;
-        }
-      }
-      if (k == 26) // 都不存在，求他们的乘积
-      {
-        int itemNum = str1.length() * str2.length();
-        res = max(res, itemNum);
-      }
-    }
-  }
-  return res;
-}
-
-int maxProduct(vector<string> &words)
-{
-  int res = 0;
-  // 找出需要比较的两两字符串
-  for (int i = 0; i < words.size(); i++)
-  {
-    for (int j = i + 1; j < words.size(); j++)
-    {
-      string str1 = words[i];
-      string str2 = words[j];
-
-      int m = 0;
-      int n = 0;
-      for (; m < str1.length(); m++)
-      {
-        n = 0;
-        for (; n < str2.length(); n++)
-        {
-          if (str1[m] == str2[n])
-          {
-            break;
-          }
-        }
-        if (n != str2.length())
-        {
-          break;
-        }
-      }
-
-      if (m == str1.length() && n == str2.length())
-      {
-        int itemNum = str1.length() * str2.length();
-        res = max(res, itemNum);
-      }
-    }
-  }
-  return res;
+  return {};
 }
 
 int main()
 {
   std::cout << "《剑指》" << std::endl;
-  vector<string> words = {"abcw", "baz", "foo", "bar", "xtfn", "abcdef"};
-  auto res = maxProduct(words);
-  std::cout << "res:" << res << std::endl;
+  // vector<string> words = {"abcw", "baz", "foo", "bar", "xtfn", "abcdef"};
+  // auto res = maxProduct(words);
+  // std::cout << "res:" << res << std::endl;
 
   // 遍历1维数组
   // for (auto ele : res)
