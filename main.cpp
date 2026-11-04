@@ -26,74 +26,107 @@
 using namespace std;
 
 /**
-【LeetCode】209. 长度最小的子数组
-https://leetcode.cn/problems/minimum-size-subarray-sum/description/
+【LeetCode】713. 乘积小于 K 的子数组
+https://leetcode.cn/problems/subarray-product-less-than-k/description/
 
-给定一个含有 n 个正整数的数组和一个正整数 target 。
-找出该数组中满足其总和大于等于 target 的长度最小的 子数组 [numsl, numsl+1, ...,
-numsr-1, numsr] ，并返回其长度。如果不存在符合条件的子数组，返回 0 。
+给定一个整数数组 nums 和一个整数 k。
+请你返回 子数组 内所有元素的 乘积严格小于 k 的连续子数组的数目。
 
 示例 1：
-输入：target = 7, nums = [2,3,1,2,4,3]
-输出：2
-解释：子数组 [4,3] 是该条件下的长度最小的子数组。
+输入：nums = [10,5,2,6], k = 100
+输出：8
+解释：8 个乘积小于 100
+的子数组分别为：[10]、[5]、[2]、[6]、[10,5]、[5,2]、[2,6]、[5,2,6]。
+需要注意的是 [10,5,2] 并不是乘积小于 100 的子数组。
 
 示例 2：
-输入：target = 4, nums = [1,4,4]
-输出：1
-
-示例 3：
-输入：target = 11, nums = [1,1,1,1,1,1,1,1]
+输入：nums = [1,2,3], k = 0
 输出：0
 
-提示：
-1 <= target <= 109
-1 <= nums.length <= 105
-1 <= nums[i] <= 104
-
-进阶：
-如果你已经实现 O(n) 时间复杂度的解法, 请尝试设计一个 O(n log(n))
-时间复杂度的解法。
+提示:
+1 <= nums.length <= 3 * 104
+1 <= nums[i] <= 1000
+0 <= k <= 106
  */
 
 /**
- * 1、审题：输入一个正整数数组和一个整数值target，要求从数组中找出一个最短子数组，子数组的和大于等于target的值，并返回子数组的长度
- * 2、解题：使用双指针解法l-r，刚开始左右指针都指向数组最左侧元素，然后判断双指针指向的子数组的和大小sum，如果和大于等于target的值，
- * - 求他们子数组的长度，并且让左指针left左移一位继续比较
- * - 如果小于target的值，则右指针往右移，扩大sum和的大小，直到数组的最右侧
- * 3、总结：
- * - 子数组长度，要比对的是最小长度，所以默认值应该要是大的值
- * - 存在子数组命中长度刚好是数组原始长度，所以res默认值要找一个不存在的值
- * 4、题外话：
- * - 如果数组中存在负数呢？
+ * 双指针解法的另一种实现：
+ * -
+ * 使用while循环，让左右指针left，right在循环中的子数组乘积值，默认两个指针都指向第一个元素，他们的乘积值也是第一个元素值
+ * -
+ * 然后判断乘积值与目标值k的大小，如果比k大则移动左指针，并且乘积处于原先的左指针元素值
+ * -
+ * 如果乘积值小于目标值k，则累加子数组个数，并将右指针元素右移，直到左指针移动到数组最右侧
  */
-int minSubArrayLen(int target, vector<int> &nums) {
+int numSubarrayProductLessThanK(vector<int> &nums, int k) {
+  int res = 0;
   int left = 0, right = 0;
-  int res = nums.size() + 1;
-  int sum = nums[left];
+  int mult = nums[0];
 
-  while (left <= right && right < nums.size()) {
-    std::cout << " left:" << left << " ,right:" << right << " ,sum:" << sum
-              << " ,res:" << res << std::endl;
-    if (sum >= target) {
-      res = min(res, (right - left + 1));
-      sum -= nums[left];
-      left++;
-    } else {
+  while (left <= right && left < nums.size()) {
+    std::cout << "left:" << left << " ,right:" << right << " ,mult:" << mult
+              << std::endl;
+
+    if (mult < k) {
+      res++;
       right++;
       if (right < nums.size()) {
-        sum += nums[right];
+        mult *= nums[right];
+      } else {
+        left++;
+        right = left;
+        if (left < nums.size())
+          mult = nums[left];
+      }
+    } else {
+      left++;
+      right = left;
+      if (left < nums.size())
+        mult = nums[left];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * 1、审题：输入一个整数数组nums，和整数值k，要求从数组中找出所有的子数组，要求子数组中所有元素的乘积小于整数k，返回所有的子数组的个数
+ * 2、解题：双指针解法
+ * -
+ * 使用双指针left，和right，left从原始数组最左侧位置开始，right指针默认与left指针位置相同，且他们的乘积为子数组第一个元素的值，
+ * -
+ * 接着比较乘积与目标值k的大小，如果乘积小于目标值k，则有指针right右移一位，乘积也变大，直到他们的乘积大于等于目标值k，则本次left循环结束
+ * - 下一轮循环从left+1位置继续求子数组的乘积值
+ */
+int numSubarrayProductLessThanK1(vector<int> &nums, int k) {
+
+  int res = 0;
+  int sum = 1;
+  int size = nums.size();
+  for (int left = 0; left < size; left++) {
+    for (int right = left; right < size; right++) {
+      if (left == right) {
+        sum = nums[right];
+      } else {
+        sum *= nums[right];
+      }
+
+      if (sum < k) {
+        res++;
+      } else {
+        break;
       }
     }
   }
-  return res > nums.size() ? 0 : res;
+  return res;
 }
 
 int main() {
   std::cout << "《剑指》" << std::endl;
-  // vector<string> words = {"abcw", "baz", "foo", "bar", "xtfn", "abcdef"};
-  // auto res = maxProduct(words);
-  // std::cout << "res:" << res << std::endl;
+  vector<int> nums = {10, 5, 2, 6};
+  int k = 100;
+  auto res = numSubarrayProductLessThanK(nums, k);
+  std::cout << "res:" << res << std::endl;
 
   // 遍历1维数组
   // for (auto ele : res)
